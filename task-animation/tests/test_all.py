@@ -319,10 +319,29 @@ class TestSettingsMerge(unittest.TestCase):
             ours = [g for g in d["hooks"][ev] if any(settings_merge.is_ours(h) for h in g["hooks"])]
             self.assertEqual(len(ours), 1, ev)
         self.assertEqual([g for g in d["hooks"]["PreToolUse"] if g.get("matcher") == "*"][0]["hooks"][0]["command"],
-                         '"C:/Users/me/.claude/task-animation/.venv/Scripts/python.exe" '
-                         '"C:/Users/me/.claude/task-animation/hook.py" PreToolUse')
+                         'C:/Users/me/.claude/task-animation/.venv/Scripts/python.exe '
+                         'C:/Users/me/.claude/task-animation/hook.py PreToolUse')
         backups = [f for f in os.listdir(self.dir) if ".bak-" in f]
         self.assertTrue(backups)
+
+    def test_command_parses_in_powershell_cmd_and_bash(self):
+        cmd = settings_merge.build_command(r"C:\Users\gautham\.claude\task-animation\.venv\Scripts\python.exe",
+                                           r"C:\Users\gautham\.claude\task-animation\hook.py", "Stop")
+        self.assertFalse(cmd.startswith('"'))         # PowerShell rejects a leading quoted string
+        self.assertNotIn("\\", cmd)                  # bash would eat backslashes
+        self.assertTrue(settings_merge.is_ours({"command": cmd}))
+        spaced = settings_merge.build_command("C:/Users/Jo Ann/py.exe", "C:/Users/Jo Ann/task-animation/hook.py", "Stop")
+        self.assertTrue(spaced.startswith('& "'))
+
+    def test_reinstall_replaces_old_quoted_entries(self):
+        old = {"hooks": {"Stop": [{"hooks": [{"type": "command", "command":
+               '"C:/u/.claude/task-animation/.venv/Scripts/python.exe" "C:/u/.claude/task-animation/hook.py" Stop'}]}]}}
+        with open(self.path, "w") as f:
+            json.dump(old, f)
+        settings_merge.main(["install"] + self.args)
+        cmds = [h["command"] for g in self.load()["hooks"]["Stop"] for h in g["hooks"]]
+        self.assertEqual(len(cmds), 1)
+        self.assertFalse(cmds[0].startswith('"'))
 
     def test_uninstall_restores_original(self):
         settings_merge.main(["install"] + self.args)

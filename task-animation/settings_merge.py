@@ -48,12 +48,48 @@ def strip_ours(settings):
         del settings["hooks"]
 
 
+def short_path(path):
+    """Windows 8.3 short name (no spaces) when available; otherwise the path unchanged."""
+    if os.name != "nt" or not any(c.isspace() for c in path):
+        return path
+    try:
+        import ctypes
+        buf = ctypes.create_unicode_buffer(1024)
+        n = ctypes.windll.kernel32.GetShortPathNameW(path, buf, len(buf))
+        return buf.value if 0 < n < len(buf) else path
+    except Exception:
+        return path
+
+
+def shorten_prefix(path):
+    """Shorten only the part before "task-animation/" so MARKER stays intact."""
+    p = path.replace("\\", "/")
+    i = p.lower().find("/task-animation/")
+    if i <= 0:
+        return p
+    return short_path(p[:i].replace("/", "\\")).replace("\\", "/") + p[i:]
+
+
+def build_command(python, hook, event):
+    """A command line that parses the same in PowerShell, cmd and bash.
+
+    Claude Code may run hooks through PowerShell, where a line starting with a
+    quoted path is a syntax error. Unquoted forward-slash paths work in all three
+    shells, so paths are left unquoted when they contain no spaces (8.3 short
+    names are tried first). Only if spaces remain does it fall back to
+    PowerShell's call operator.
+    """
+    py, hk = shorten_prefix(python), shorten_prefix(hook)
+    if not any(c.isspace() for c in py + hk):
+        return "%s %s %s" % (py, hk, event)
+    return '& "%s" "%s" %s' % (py, hk, event)
+
+
 def add_ours(settings, python, hook):
-    py, hk = python.replace("\\", "/"), hook.replace("\\", "/")
     hooks = settings.setdefault("hooks", {})
     for event, matcher in EVENTS:
         group = {"hooks": [{"type": "command",
-                            "command": '"%s" "%s" %s' % (py, hk, event),
+                            "command": build_command(python, hook, event),
                             "timeout": HOOK_TIMEOUT_S}]}
         if matcher is not None:
             group = {"matcher": matcher, **group}
