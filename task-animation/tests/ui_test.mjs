@@ -58,11 +58,10 @@ await page.evaluate(() => {
 const backlog = await page.evaluate(() => TA._state().pending);
 check('backlog > ~1500 chars skips ahead', backlog <= 3200);
 
-await page.evaluate(() => { window.__raf = 0; const o = requestAnimationFrame; window.requestAnimationFrame = (f) => { window.__raf++; return o(f); }; TA.setVisible(false); });
+await page.evaluate(() => TA.setVisible(false));
 await page.waitForTimeout(300);
-const r0 = await page.evaluate(() => window.__raf);
-await page.waitForTimeout(500);
-check('rendering paused while hidden', (await page.evaluate(() => window.__raf)) === r0);
+const st = await page.evaluate(() => TA._state());
+check('rendering paused while hidden', !st.looping && !st.typing);
 
 await browser.close();
 const failed = results.filter((r) => !r[1]).length;

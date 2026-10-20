@@ -15,7 +15,7 @@
   header { display: flex; align-items: center; gap: 10px; height: 30px; flex: none;
     padding: 0 6px 0 10px; background: #081208; border-bottom: 1px solid var(--line); cursor: default; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none;
-    box-shadow: 0 0 6px var(--green); animation: pulse 1.6s ease-in-out infinite; }
+    box-shadow: 0 0 6px var(--green); animation: pulse 1.6s steps(8) infinite; }  /* stepped: ~5 repaints/s, not 60 */
   body.idle .dot { animation: none; opacity: .35; box-shadow: none; }
   @keyframes pulse { 50% { opacity: .25; transform: scale(.7); } }
   .brand { color: var(--green); font-weight: bold; flex: none; }
@@ -272,7 +272,7 @@ window.TA = (() => {
   const rctx = rainC.getContext('2d'), tctx = tokC.getContext('2d');
   const FS = 14, TFS = 13;
   let W = 0, H = 0, drops = [], tcols = [], hexAddr = 0, hexLines = [];
-  let rafId = null, lastRain = 0, lastTok = 0, lastHex = 0;
+  let loopTimer = null, lastRain = 0, lastTok = 0, lastHex = 0;
   const rnd = (n) => Math.floor(Math.random() * n);
 
   function resize() {
@@ -322,7 +322,6 @@ window.TA = (() => {
     tctx.font = 'bold ' + TFS + 'px "Cascadia Mono", Consolas, monospace';
     tctx.textBaseline = 'top';
     tctx.fillStyle = cfg.colors.cyan;
-    tctx.shadowColor = cfg.colors.cyan; tctx.shadowBlur = 6;
     const rows = Math.ceil(H / (TFS + 6));
     for (const c of tcols) {
       if (c.wait > 0) { c.wait--; continue; }
@@ -330,7 +329,6 @@ window.TA = (() => {
       c.y++;
       if (c.y > rows) { c.y = -rnd(10); c.wait = rnd(8); }
     }
-    tctx.shadowBlur = 0;
   }
   function stepHex() {
     hexAddr = (hexAddr + 16) & 0xfffff;
@@ -340,15 +338,19 @@ window.TA = (() => {
     hexEl.textContent = '';
     for (const l of hexLines) { const d = document.createElement('div'); d.textContent = l; hexEl.appendChild(d); }
   }
-  function frame(now) {
-    rafId = null;
+  // One timer woken only when a layer is due (no 60 fps rAF loop) keeps CPU low.
+  function loop() {
+    loopTimer = null;
     if (!visible || paused) return;
+    let now = performance.now();
     if (now - lastRain >= cfg.rain_step_ms) { lastRain = now; stepRain(); }
     if (now - lastTok >= cfg.token_step_ms) { lastTok = now; stepTokens(); }
     if (now - lastHex >= cfg.hex_update_ms) { lastHex = now; stepHex(); }
-    rafId = requestAnimationFrame(frame);
+    now = performance.now();
+    const due = Math.min(lastRain + cfg.rain_step_ms, lastTok + cfg.token_step_ms, lastHex + cfg.hex_update_ms);
+    loopTimer = setTimeout(loop, Math.max(10, due - now));
   }
-  function startLoop() { if (!rafId && visible && !paused) rafId = requestAnimationFrame(frame); }
+  function startLoop() { if (!loopTimer && visible && !paused) loopTimer = setTimeout(loop, 0); }
   function hexToRgba(hex, a) {
     const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
     const n = m ? parseInt(m[1], 16) : 0x050805;
@@ -422,7 +424,7 @@ window.TA = (() => {
       if (!paused) startLoop();
     },
     // test hooks
-    _state: () => ({ pending: pendingChars(), hasReal, demoActive, visible, paused, flush: !!flush,
+    _state: () => ({ looping: !!loopTimer, typing: !!typeTimer, pending: pendingChars(), hasReal, demoActive, visible, paused, flush: !!flush,
       text: Array.from(linesEl.querySelectorAll('.c')).map((e) => e.textContent).join('\n') }),
   };
   return TA;

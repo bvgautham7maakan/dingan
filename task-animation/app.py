@@ -557,11 +557,18 @@ class App:
             lambda: self.server and self.server.shutdown(),
             lambda: self.window and self.window.destroy(),
         ):
-            try:
-                step()
-            except Exception:
-                pass
+            # each step gets at most 1 s so a stuck toolkit call can't block exit
+            t = threading.Thread(target=lambda f=step: _quiet(f), daemon=True)
+            t.start()
+            t.join(1.0)
         os._exit(0)
+
+
+def _quiet(fn):
+    try:
+        fn()
+    except Exception:
+        pass
 
 
 def setup_logging():
