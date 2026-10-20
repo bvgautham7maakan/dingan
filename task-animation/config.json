@@ -1,0 +1,24 @@
+{
+  "port": 47821,
+  "hotkey": "ctrl+alt+m",
+  "always_on_top": true,
+  "window": { "width": 900, "height": 320 },
+
+  "typing_ms_per_char": 45,
+  "backlog_chars": 1500,
+  "stop_flush_max_ms": 3000,
+  "rain_step_ms": 90,
+  "token_step_ms": 180,
+  "hex_update_ms": 350,
+
+  "colors": {
+    "background": "#050805",
+    "green": "#00ff41",
+    "cyan": "#22d3ee",
+    "pink": "#ff7ad9",
+    "amber": "#ffcf5c"
+  },
+
+  "max_payload_chars": 4000,
+  "hidden_patterns": [".env*", "*.key", "*.pem", "*secret*", "*credential*", "id_rsa*"]
+}
