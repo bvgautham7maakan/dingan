@@ -3,6 +3,7 @@
  */
 import { PrismaClient } from "@prisma/client";
 import { hash } from "@node-rs/argon2";
+import { readFileSync } from "fs";
 
 const db = new PrismaClient();
 const TEMP = process.env.SEED_TEMP_PASSWORD || "Kem@Temp2026";
@@ -61,7 +62,7 @@ const HOLIDAYS: [string, string][] = [
   ["2026-05-28", "Eid Al Adha (est.)"],
   ["2026-05-29", "Eid Al Adha (est.)"],
   ["2026-06-16", "Hijri New Year (est.)"],
-  ["2026-08-25", "Prophet's Birthday (est.)"],
+  ["2026-08-28", "Public holiday (Prophet's Birthday)"],
   ["2026-12-01", "Commemoration Day"],
   ["2026-12-02", "National Day"],
   ["2026-12-03", "National Day"],
@@ -138,12 +139,12 @@ async function main() {
   ];
   for (const s of subs) await db.subcontractor.upsert({ where: { name: s.name }, update: {}, create: s });
 
-  // Workers E01–E34. Real names load from the timesheet Employees sheet once the file is in reference/.
-  for (let n = 1; n <= 34; n++) {
-    const empCode = `E${String(n).padStart(2, "0")}`;
-    const status = n === 13 ? "LEFT" : n >= 32 ? "PLACEHOLDER" : "ACTIVE";
-    const name = n === 13 ? "Nigesh" : `Worker ${empCode}`;
-    await db.worker.upsert({ where: { empCode }, update: {}, create: { empCode, name, status } });
+  // Workers from the timesheet workbook's Employees sheet (reference/employees.json, no salary data).
+  type Emp = { empCode: string; name: string | null; status: string; lastDay: string | null };
+  const emps = JSON.parse(readFileSync("reference/employees.json", "utf8")) as Emp[];
+  for (const e of emps) {
+    const data = { name: e.name ?? `Employee ${e.empCode.slice(1)}`, status: e.status, lastDay: e.lastDay };
+    await db.worker.upsert({ where: { empCode: e.empCode }, update: data, create: { empCode: e.empCode, ...data } });
   }
 
   for (const [date, name] of HOLIDAYS)
@@ -155,11 +156,64 @@ async function main() {
     ["dayShiftStart", "08:00"],
     ["nightShiftStart", "23:00"],
     ["eveningShiftStart", "20:00"],
+    // timesheet rules – same values as the reference workbook's Settings sheet
+    ["ts.normalHours", 8],
+    ["ts.lunchHours", 1],
+    ["ts.lunchAfterHours", 5],
+    ["ts.otNormalRate", 1.25],
+    ["ts.otHolidayRate", 1.5],
   ];
   for (const [key, value] of settings)
     await db.setting.upsert({ where: { key }, update: {}, create: { key, value: value as never } });
 
-  console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, 34 workers.`);
+  await seedDemoAttendance(ids["renjith"], ids["sanu"]);
+
+  console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, ${emps.length} workers.`);
+}
+
+/** Demo: today's plan (NBK crew) and yesterday's attendance with finish times. Skipped if any plan exists. */
+async function seedDemoAttendance(renjithId: string, sanuId: string) {
+  if ((await db.dayPlan.count()) > 0) return;
+  const dubaiDay = (offset: number) => {
+    const d = new Date(Date.now() + 4 * 3_600_000 + offset * 86_400_000);
+    return d.toISOString().slice(0, 10);
+  };
+  const at = (day: string, hhmm: string) => {
+    const [y, m, d] = day.split("-").map(Number);
+    const [h, min] = hhmm.split(":").map(Number);
+    return new Date(Date.UTC(y, m - 1, d, h - 4, min));
+  };
+  const sites = Object.fromEntries((await db.site.findMany()).map((s) => [s.code, s]));
+  const projects = Object.fromEntries((await db.project.findMany()).map((p) => [p.code, p]));
+  const v1 = await db.vehicle.findUniqueOrThrow({ where: { name: "Vehicle 1" } });
+  const v2 = await db.vehicle.findUniqueOrThrow({ where: { name: "Vehicle 2" } });
+  const workers = await db.worker.findMany({ where: { status: "ACTIVE" }, orderBy: { empCode: "asc" } });
+  const crew = (i: number) => (i < 12 ? "NBK" : i < 20 ? "SAFE" : "MANG");
+
+  for (const day of [dubaiDay(-1), dubaiDay(0)]) {
+    await db.dayPlan.create({
+      data: {
+        date: day, createdById: renjithId, status: "FINAL",
+        lines: { create: workers.map((w, i) => ({ workerId: w.id, siteId: sites[crew(i)].id, vehicleId: crew(i) === "NBK" ? v1.id : v2.id })) },
+      },
+    });
+  }
+  // Yesterday at NBK: 08:00–17:00, one late at 08:20, one sick, two staying until 19:00.
+  const y = dubaiDay(-1);
+  if (new Date(y + "T00:00:00Z").getUTCDay() === 0) return; // no demo attendance on a Sunday
+  for (const [i, w] of workers.slice(0, 12).entries()) {
+    const sick = i === 2;
+    const inT = i === 1 ? "08:20" : "08:00";
+    const outT = i === 4 || i === 5 ? "19:00" : "17:00";
+    const rec = await db.attendance.create({
+      data: {
+        date: y, workerId: w.id, siteId: sites.NBK.id, status: sick ? "OUT" : i === 1 ? "LATE" : "IN", leaveCode: sick ? "SL" : null,
+        shift: "DAY", shiftStart: "08:00", inAt: sick ? null : at(y, inT), outAt: sick ? null : at(y, outT), markedById: sanuId,
+      },
+    });
+    if (!sick)
+      await db.workSegment.create({ data: { attendanceId: rec.id, siteId: sites.NBK.id, projectId: projects.NBK.id, startAt: at(y, inT), endAt: at(y, outT) } });
+  }
 }
 
 main()

@@ -48,6 +48,10 @@ Every user starts with the temporary password from `SEED_TEMP_PASSWORD` and must
 | jitendar | Jitendar | HVAC supervisor |
 | ali | Ali | Driver (Vehicle 1) |
 
+## Reference data
+
+`reference/` holds notes and test fixtures taken from the KEM workbooks (worker names, timesheet rules, sample Daily Log rows). No salary or rate data.
+
 ## Data and privacy
 
 - All data stays on the ZBook (`data/`). No third-party services. Next.js telemetry is switched off.

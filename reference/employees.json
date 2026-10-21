@@ -1,0 +1,308 @@
+[
+  {
+    "empCode": "E01",
+    "name": "Abilash",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E02",
+    "name": "Asad",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E03",
+    "name": "Aneesh",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E04",
+    "name": "Azim",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E05",
+    "name": "Balram",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E06",
+    "name": "Damoder",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E07",
+    "name": "Deeraj",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E08",
+    "name": "Gurmukh",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E09",
+    "name": "Hazbulla",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E10",
+    "name": "Kamran",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E11",
+    "name": "Lalu",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E12",
+    "name": "Irfan ullah",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E13",
+    "name": "Nigesh",
+    "trade": null,
+    "designation": null,
+    "status": "LEFT",
+    "joinDate": null,
+    "lastDay": "2026-09-13"
+  },
+  {
+    "empCode": "E14",
+    "name": "Nitheesh",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E15",
+    "name": "Numan",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E16",
+    "name": "Pardeep",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E17",
+    "name": "Saif ullah",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E18",
+    "name": "Shehzad",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E19",
+    "name": "Sukdeep",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E20",
+    "name": "Tej",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E21",
+    "name": "Umar",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E22",
+    "name": "Vishnu",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E23",
+    "name": "Zahoor",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E24",
+    "name": "Shafi",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E25",
+    "name": "Jaswant",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E26",
+    "name": "Jitendtra",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E27",
+    "name": "Munna",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E28",
+    "name": "Md Mustafa",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E29",
+    "name": "Sujeet",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E30",
+    "name": "Ravindra",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E31",
+    "name": "Sanu",
+    "trade": null,
+    "designation": null,
+    "status": "ACTIVE",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E32",
+    "name": null,
+    "trade": null,
+    "designation": null,
+    "status": "PLACEHOLDER",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E33",
+    "name": null,
+    "trade": null,
+    "designation": null,
+    "status": "PLACEHOLDER",
+    "joinDate": null,
+    "lastDay": null
+  },
+  {
+    "empCode": "E34",
+    "name": null,
+    "trade": null,
+    "designation": null,
+    "status": "PLACEHOLDER",
+    "joinDate": null,
+    "lastDay": null
+  }
+]

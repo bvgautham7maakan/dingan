@@ -8,6 +8,7 @@ import LangToggle from "./LangToggle";
 import OnlineStatus from "./OnlineStatus";
 import SideNav from "./SideNav";
 import TabBar from "./TabBar";
+import OutboxBoot from "./OutboxBoot";
 
 export default async function Shell({ user, children }: { user: CurrentUser; children: React.ReactNode }) {
   const t = await getTranslations("common");
@@ -46,6 +47,7 @@ export default async function Shell({ user, children }: { user: CurrentUser; chi
         </main>
       </div>
       <TabBar tabs={tabsFor(user.roles)} />
+      <OutboxBoot />
     </>
   );
 }

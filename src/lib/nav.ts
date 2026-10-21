@@ -29,8 +29,9 @@ export const NAV: NavGroup[] = [
     key: "site",
     icon: "◧",
     items: [
-      { key: "attendance", href: "/m/attendance", roles: OFFICE_SITE, stage: "M2" },
-      { key: "timesheet", href: "/m/timesheet", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "COORD", "HEAD_SUP"], stage: "M2" },
+      { key: "attendance", href: "/m/attendance", roles: ["SUP", "HEAD_SUP", "HVAC_SUP", "SE", "PE", "PM", "ADMIN"] },
+      { key: "dayPlan", href: "/m/plan", roles: ["HEAD_SUP", "SE", "PE", "PM", "ADMIN"] },
+      { key: "timesheet", href: "/m/timesheet", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "COORD", "HEAD_SUP"] },
       { key: "moves", href: "/m/moves", roles: OFFICE_SITE, stage: "M3" },
       { key: "duties", href: "/m/duties", roles: OFFICE_SITE, stage: "M4" },
       { key: "dailyReport", href: "/m/daily-report", roles: OFFICE_SITE, stage: "M4" },

@@ -17,7 +17,8 @@
     "offline": "ऑफ़लाइन – बदलाव इस फ़ोन में रखे गए हैं",
     "comingStage": "चरण {stage} में आएगा",
     "comingPhase": "फ़ेज़ {phase} में आएगा",
-    "comingText": "यह स्क्रीन बाद के चरण में आएगी।"
+    "comingText": "यह स्क्रीन बाद के चरण में आएगी।",
+    "offlineShort": "ऑफ़लाइन"
   },
   "nav": {
     "home": "होम",
@@ -40,7 +41,8 @@
     "drawings": "ड्रॉइंग",
     "siteQueries": "साइट सवाल",
     "account": "मेरा खाता",
-    "more": "और"
+    "more": "और",
+    "dayPlan": "दिन का प्लान"
   },
   "auth": {
     "title": "साइन इन",
@@ -75,5 +77,50 @@
     "thisDevice": "यह डिवाइस",
     "signOutOthers": "बाकी सभी डिवाइस से साइन आउट",
     "changePassword": "पासवर्ड बदलें"
+  },
+  "sync": {
+    "saved": "फ़ोन में सेव · {count} बाकी",
+    "allSent": "सब भेज दिया",
+    "noSignal": "नेटवर्क नहीं"
+  },
+  "att": {
+    "loading": "लोड हो रहा है…",
+    "retry": "फिर कोशिश करें",
+    "fromPhone": "इंटरनेट नहीं – फ़ोन में सेव कॉपी दिख रही है।",
+    "site": "साइट",
+    "date": "तारीख",
+    "today": "आज",
+    "shift": "शिफ़्ट",
+    "shift_DAY": "दिन",
+    "shift_NIGHT": "रात",
+    "shift_EVE": "शाम",
+    "shift_OTHER": "अन्य",
+    "startTime": "शुरू का समय",
+    "countMarked": "{total} में से {marked} दर्ज",
+    "countUnmarked": "{count} दर्ज नहीं",
+    "markAllIn": "बाकी सबको {time} पर IN करें",
+    "notMarked": "दर्ज नहीं",
+    "reason": "कारण",
+    "leave_AL": "सालाना छुट्टी",
+    "leave_SL": "बीमारी की छुट्टी",
+    "leave_CL": "आकस्मिक छुट्टी",
+    "leave_A": "गैरहाज़िर",
+    "leave_OFF": "छुट्टी",
+    "finish": "खत्म होने का समय",
+    "undo": "वापस लें",
+    "addWorker": "प्लान से बाहर का मज़दूर जोड़ें",
+    "endOfDay": "दिन का अंत",
+    "finishAll": "सभी हाज़िर {time} पर खत्म"
+  },
+  "plan": {
+    "title": "दिन का प्लान",
+    "site": "साइट",
+    "vehicle": "गाड़ी",
+    "shift": "शिफ़्ट",
+    "copyPrevious": "पिछला प्लान कॉपी करें"
+  },
+  "ts": {
+    "title": "टाइमशीट",
+    "export": "Excel डाउनलोड"
   }
 }

@@ -16,9 +16,9 @@ export default function OnlineStatus() {
     };
   }, []);
   return (
-    <span className="sync-pill" role="status">
+    <span className="sync-pill" role="status" title={online ? t("online") : t("offline")}>
       <span aria-hidden="true">{online ? "●" : "○"}</span>{" "}
-      <span className={online ? "sync-text" : undefined}>{online ? t("online") : t("offline")}</span>
+      <span className={online ? "sync-text" : undefined}>{online ? t("online") : t("offlineShort")}</span>
     </span>
   );
 }

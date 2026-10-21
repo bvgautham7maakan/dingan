@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M1 built** – awaiting sign-off before M2.
+Status: **M2 built** – awaiting sign-off before M3.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -167,3 +167,19 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | DB reset | `npm run reset-demo` deletes the SQLite file and rebuilds | Prisma blocks `migrate reset` from automated agents |
 | Workers | E01–E34 seeded as "Worker Exx" (E13 Nigesh = Left, E32–E34 placeholders) | Real names load once the timesheet workbook is in `reference/` |
 | Holidays | UAE 2026–27 seeded; Islamic dates marked "(est.)" | Editable in Admin › Public holidays |
+
+## 6. Decisions taken during M2
+
+| Item | Decision | Why |
+|---|---|---|
+| Timesheet rules | Exact port of the reference workbook formulas (`src/lib/timesheet/rules.ts`) | Tested against 37 real Daily Log rows + 5 workers' cycle totals |
+| Night shift | No special rule: 23:00–07:00 is an 8-h span, so 8 normal, no OT (same as workbook) | Workbook gets the brief's result this way |
+| 20:00–08:00 shift | 8 normal + 3 h OT ×1.25 (same as workbook, e.g. Zahoor) | Brief silent; workbook is the reference |
+| 8–9 h span on Mon–Sat | Full 8 normal hours (workbook behaviour) | Matches workbook |
+| No finish time entered | Standard 9-h shift assumed; marked `*` on screen and in Remarks | Timesheet must still compute |
+| Day with no record | Sunday/PH → OFF; normal day → blank (not entered); after last day → LEFT | Matches workbook codes |
+| Leave codes | App OUT reasons AL, SL, CL, A, OFF; LV and LEFT exist only in the export | Brief list; workbook extras kept for format |
+| Moves | Hours split by time at each site; extra "Site hours" sheet in the export | Needed for M3 and man-days |
+| Excel header text | Black on cyan (same contrast rule as the screens) | Readability |
+| Salaries | Not stored; money columns in the export keep their headers, blank | Confidential, and out of pilot scope |
+| Mockup V4 | Screens are images – only captions extracted (`reference/mockup-v4-notes.md`) | Needs the PDF in the repo to check layouts |

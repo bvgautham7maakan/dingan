@@ -3,13 +3,12 @@ import { db } from "@/lib/db";
 import { createSession, revokeAllSessions, validateSession, deviceLabelFrom } from "@/lib/auth/session";
 import { hashPassword, verifyPassword, passwordProblem, tempPassword } from "@/lib/auth/password";
 import { isLoginBlocked, recordLoginAttempt } from "@/lib/auth/rate-limit";
+import { resetDb } from "./reset";
 
 let userId: string;
 
 beforeAll(async () => {
-  await db.session.deleteMany();
-  await db.userRole.deleteMany();
-  await db.user.deleteMany();
+  await resetDb();
   const u = await db.user.create({
     data: { username: "sanu", displayName: "Sanu", passwordHash: await hashPassword("Secret123"), mustChangePassword: false, roles: { create: [{ role: "SUP" }] } },
   });

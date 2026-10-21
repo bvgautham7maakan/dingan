@@ -194,3 +194,54 @@ table.kem tbody tr:nth-child(even) td { background: var(--alt-row); }
 
 .sync-pill { font-size: 13px; color: var(--muted); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* ── Sync status + chips ───────────────── */
+.sync-bar { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--radius); font-weight: bold; font-size: 15px; }
+.sync-ok { background: var(--alt-row); color: var(--green); }
+.sync-wait { background: #fff; border: 2px solid var(--amber); color: var(--amber); }
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border: 0; padding: 0; margin: 10px 0; }
+.chips-row legend { margin-bottom: 6px; }
+.chip {
+  min-height: var(--tap); min-width: var(--tap); padding: 0 14px; font-size: 16px; font-family: var(--font);
+  border: 2px solid var(--divider); border-radius: 30px; background: var(--white); color: var(--body); cursor: pointer;
+}
+.chip[aria-pressed="true"] { border-color: var(--black); background: var(--cyan); color: var(--black); font-weight: bold; }
+.chip-time { min-height: var(--tap); font-size: 18px; padding: 0 10px; border: 2px solid var(--divider); border-radius: var(--radius); font-family: var(--font); }
+
+/* ── Attendance ────────────────────────── */
+.att { max-width: 720px; }
+.att-head { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+.att-date { font-size: 18px; font-weight: bold; min-height: 48px; display: flex; align-items: center; }
+.att-start { margin: 6px 0 10px; }
+.att-start summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--blue); }
+.att-count { font-size: 16px; margin: 12px 0; }
+.att-list { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+.att-row { border: 1px solid var(--divider); border-left: 6px solid var(--green); border-radius: var(--radius); padding: 12px; }
+.att-row.att-unmarked { border-left-color: var(--red); }
+.att-who { display: grid; gap: 2px; margin-bottom: 10px; }
+.att-who b { font-size: 18px; color: var(--black); }
+.att-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.att-btn { min-height: var(--tap-main) !important; font-size: 18px; }
+.att-btn[aria-pressed="true"] { background: var(--cyan); border-color: var(--black); }
+.att-more { margin-top: 10px; font-size: 15px; }
+.att-more .btn-link { min-height: 44px; }
+.att-finish { border-top: 2px solid var(--divider); margin-top: 20px; }
+
+/* ── Timesheet grid ────────────────────── */
+.ts-grid th, .ts-grid td { text-align: center; padding: 6px 6px; }
+.ts-grid td:nth-child(2), .ts-grid th:nth-child(2) { text-align: left; }
+.ts-grid th.ts-off { background: var(--black); color: var(--white); }
+.ts-grid td.ts-ot { font-weight: bold; color: var(--blue); }
+
+/* ── Day plan ──────────────────────────── */
+.plan-list { list-style: none; padding: 0; margin: 0 0 90px; display: grid; gap: 8px; }
+.plan-row { display: grid; grid-template-columns: 1.4fr 1.2fr 1fr 1fr; gap: 10px; align-items: end; padding: 10px 12px; border: 1px solid var(--divider); border-radius: var(--radius); }
+.plan-row:nth-child(even) { background: var(--alt-row); }
+.plan-who b { color: var(--black); }
+.plan-save { position: sticky; bottom: 0; background: var(--white); padding: 10px 0; border-top: 2px solid var(--divider); }
+@media (max-width: 899px) {
+  .plan-row { grid-template-columns: 1fr 1fr; }
+  .plan-who { grid-column: 1 / -1; }
+  .plan-save { bottom: var(--tabbar); }
+}
+.sync-pill { white-space: nowrap; font-weight: bold; }

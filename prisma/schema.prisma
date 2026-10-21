@@ -198,6 +198,8 @@ model Worker {
   designation String?
   status      String   @default("ACTIVE") // ACTIVE LEFT PLACEHOLDER
   joinDate    String?
+  lastDay     String? // yyyy-mm-dd, set when status = LEFT
+  remarks     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
