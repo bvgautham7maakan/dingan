@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **awaiting "go"**. No application code written yet.
+Status: **M1 built** – awaiting sign-off before M2.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -8,7 +8,7 @@ Status: **awaiting "go"**. No application code written yet.
 |---|---|---|
 | App | Next.js 15 (App Router) + TypeScript | One codebase, responsive |
 | UI | Plain CSS modules + CSS variables (KEM palette) | No UI kit; keeps 60 px targets and Arial under control |
-| PWA | Web manifest + Serwist service worker | Offline shell + cached FC drawings |
+| PWA | Web manifest + hand-written service worker (`public/sw.js`) | Offline shell now; IndexedDB outbox in M2, FC drawings in M6 |
 | Offline data | IndexedDB (Dexie) outbox → `/api/sync` | Each mutation carries a client UUID; server is idempotent |
 | DB | Prisma + SQLite | No Prisma enums (stored as `String`, validated by zod) so the schema moves to PostgreSQL unchanged |
 | Money | Integer **fils** (AED × 100) | No float rounding; portable |
@@ -156,3 +156,14 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | 11 | PWA manifest + service worker shell |
 | 12 | Tests: auth, revoke, money strip; Playwright login at 390/1440 px |
 | 13 | Commit "M1" + click-through notes |
+
+## 5. Decisions taken during M1
+
+| Item | Decision | Why |
+|---|---|---|
+| Service worker | Hand-written `public/sw.js` instead of Serwist | Fewer moving parts; same result for an app shell |
+| Text on cyan | Black, not white | White on `#00B4F0` is 2.5:1 contrast (fails WCAG, unreadable in sunlight). Black is 8.7:1 |
+| Temporary passwords | Shown once via a 2-minute cookie, never in the URL | Keeps them out of browser history |
+| DB reset | `npm run reset-demo` deletes the SQLite file and rebuilds | Prisma blocks `migrate reset` from automated agents |
+| Workers | E01–E34 seeded as "Worker Exx" (E13 Nigesh = Left, E32–E34 placeholders) | Real names load once the timesheet workbook is in `reference/` |
+| Holidays | UAE 2026–27 seeded; Islamic dates marked "(est.)" | Editable in Admin › Public holidays |

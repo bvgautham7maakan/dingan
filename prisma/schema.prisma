@@ -1,0 +1,776 @@
+// KEM Site Coordination Platform — pilot schema.
+// Portability rules (SQLite now, PostgreSQL later):
+//  - no Prisma enums: enum-like fields are String, validated with zod (src/lib/enums.ts)
+//  - money is Int in fils (AED x 100), field names end in "Fils" (stripped for no-AED roles)
+//  - all DateTime values are UTC; UI shows Asia/Dubai
+//  - calendar dates (attendance day, holiday) are stored as "yyyy-mm-dd" strings
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────── Core / auth ─────────────────────────
+
+model User {
+  id                 String    @id @default(cuid())
+  username           String    @unique
+  displayName        String
+  fullName           String?
+  passwordHash       String
+  mustChangePassword Boolean   @default(true)
+  active             Boolean   @default(true)
+  locale             String    @default("en")
+  phone              String?
+  lastSeenAt         DateTime?
+  prevSeenAt         DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  roles            UserRole[]
+  sessions         Session[]          @relation("SessionUser")
+  revokedSessions  Session[]          @relation("SessionRevokedBy")
+  memberships      ProjectMember[]
+  pmProjects       Project[]          @relation("ProjectPM")
+  auditLogs        AuditLog[]
+  notifications    Notification[]
+  approvalSteps    ApprovalStep[]     @relation("StepAssignee")
+  actedSteps       ApprovalStep[]     @relation("StepActor")
+  dayPlans         DayPlan[]
+  attendanceMarked Attendance[]
+  movesCreated     ManpowerMove[]
+  vehiclesDefault  Vehicle[]
+  tripsDriven      Trip[]
+  vehicleChecks    VehicleCheck[]
+  driverBills      DriverBill[]
+  dutiesAssigned   Duty[]             @relation("DutyAssigner")
+  dutiesReceived   Duty[]             @relation("DutyAssignee")
+  dailyReports     DailyReport[]
+  safetyChecklists SafetyChecklist[]
+  queriesRaised    SiteQuery[]        @relation("QueryRaiser")
+  queriesAnswered  SiteQuery[]        @relation("QueryAnswerer")
+  materialRequests MaterialRequest[]
+  alertsResolved   HighAlert[]
+  drawingReleases  DrawingRevision[]
+  calibrations     DrawingCalibration[]
+  measurements     DrawingMeasurement[]
+  files            FileObject[]
+  exports          TimesheetExport[]
+  syncReceipts     SyncReceipt[]
+}
+
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  role   String // ADMIN PE BUL OPS PM SE EST DESIGN COORD PROC HEAD_SUP SUP HVAC_SUP DRIVER
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique
+  userId      String
+  deviceLabel String?
+  userAgent   String?
+  ip          String?
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  revokedById String?
+
+  user      User  @relation("SessionUser", fields: [userId], references: [id], onDelete: Cascade)
+  revokedBy User? @relation("SessionRevokedBy", fields: [revokedById], references: [id])
+
+  @@index([userId])
+}
+
+model LoginAttempt {
+  id       String   @id @default(cuid())
+  username String
+  ip       String
+  success  Boolean
+  at       DateTime @default(now())
+
+  @@index([username, at])
+  @@index([ip, at])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String // CREATE EDIT DELETE APPROVE RETURN REJECT LOGIN LOGOUT REVOKE ...
+  entityType String
+  entityId   String?
+  before     Json?
+  after      Json?
+  at         DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([at])
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ───────────────────────── Master data ─────────────────────────
+
+model Site {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  kind             String   @default("PROJECT") // PROJECT OFFICE STORE
+  lat              Float?
+  lng              Float?
+  mapUrl           String?
+  defaultStartTime String   @default("08:00")
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  projects       Project[]
+  dayPlanLines   DayPlanLine[]
+  attendance     Attendance[]
+  segments       WorkSegment[]
+  movesFrom      ManpowerMove[] @relation("MoveFrom")
+  movesTo        ManpowerMove[] @relation("MoveTo")
+  tripsFrom      Trip[]         @relation("TripFrom")
+  tripsTo        Trip[]         @relation("TripTo")
+}
+
+model Project {
+  id               String   @id @default(cuid())
+  code             String   @unique
+  name             String
+  siteId           String
+  client           String?
+  status           String   @default("ACTIVE") // ACTIVE ON_HOLD CLOSED
+  oneDrivePath     String?
+  pmUserId         String?
+  manDayBudget     Int?
+  bulThresholdFils Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  site             Site              @relation(fields: [siteId], references: [id])
+  pm               User?             @relation("ProjectPM", fields: [pmUserId], references: [id])
+  members          ProjectMember[]
+  segments         WorkSegment[]
+  duties           Duty[]
+  dailyReports     DailyReport[]
+  safetyChecklists SafetyChecklist[]
+  siteQueries      SiteQuery[]
+  submittals       MaterialSubmittal[]
+  boqLines         BoqLine[]
+  materialRequests MaterialRequest[]
+  drawings         Drawing[]
+  files            FileObject[]
+}
+
+model ProjectMember {
+  id        String @id @default(cuid())
+  projectId String
+  userId    String
+  role      String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId, role])
+}
+
+model Worker {
+  id          String   @id @default(cuid())
+  empCode     String   @unique
+  name        String
+  trade       String?
+  designation String?
+  status      String   @default("ACTIVE") // ACTIVE LEFT PLACEHOLDER
+  joinDate    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  planLines  DayPlanLine[]
+  attendance Attendance[]
+  moves      ManpowerMoveWorker[]
+  trips      TripPassenger[]
+}
+
+model Vehicle {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  plate           String?
+  defaultDriverId String?
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  defaultDriver User?          @relation(fields: [defaultDriverId], references: [id])
+  planLines     DayPlanLine[]
+  trips         Trip[]
+  checks        VehicleCheck[]
+  bills         DriverBill[]
+}
+
+model Subcontractor {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  disciplines String // comma list, e.g. "ELE,PLB"
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model PublicHoliday {
+  id   String @id @default(cuid())
+  date String @unique // yyyy-mm-dd
+  name String
+}
+
+// ───────────────────────── Approval engine ─────────────────────────
+
+model ApprovalFlow {
+  id         String   @id @default(cuid())
+  entityType String // MATERIAL_REQUEST MANPOWER_MOVE VEHICLE_PLAN DAILY_REPORT ...
+  entityId   String
+  chainCode  String
+  status     String   @default("IN_PROGRESS") // IN_PROGRESS APPROVED REJECTED CLOSED
+  currentSeq Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  steps ApprovalStep[]
+
+  @@unique([entityType, entityId])
+}
+
+model ApprovalStep {
+  id         String    @id @default(cuid())
+  flowId     String
+  seq        Int
+  label      String
+  role       String
+  assigneeId String?
+  status     String    @default("WAITING") // WAITING PENDING APPROVED RETURNED SKIPPED
+  actedById  String?
+  actedAt    DateTime?
+  comment    String?
+
+  flow     ApprovalFlow @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  assignee User?        @relation("StepAssignee", fields: [assigneeId], references: [id])
+  actedBy  User?        @relation("StepActor", fields: [actedById], references: [id])
+
+  @@unique([flowId, seq])
+}
+
+// ───────────────────────── Attendance + timesheet ─────────────────────────
+
+model DayPlan {
+  id           String   @id @default(cuid())
+  date         String   @unique // yyyy-mm-dd
+  createdById  String
+  status       String   @default("DRAFT") // DRAFT FINAL
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdBy User          @relation(fields: [createdById], references: [id])
+  lines     DayPlanLine[]
+}
+
+model DayPlanLine {
+  id        String  @id @default(cuid())
+  planId    String
+  workerId  String
+  siteId    String
+  vehicleId String?
+  shift     String  @default("DAY") // DAY NIGHT EVE OTHER
+
+  plan    DayPlan  @relation(fields: [planId], references: [id], onDelete: Cascade)
+  worker  Worker   @relation(fields: [workerId], references: [id])
+  site    Site     @relation(fields: [siteId], references: [id])
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+
+  @@unique([planId, workerId])
+}
+
+model Attendance {
+  id          String    @id @default(cuid())
+  date        String // yyyy-mm-dd (Asia/Dubai)
+  workerId    String
+  siteId      String
+  status      String // IN LATE OUT
+  leaveCode   String? // AL SL CL A OFF
+  shift       String    @default("DAY")
+  shiftStart  String    @default("08:00")
+  inAt        DateTime?
+  outAt       DateTime?
+  markedById  String
+  clientId    String?   @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  worker   Worker        @relation(fields: [workerId], references: [id])
+  site     Site          @relation(fields: [siteId], references: [id])
+  markedBy User          @relation(fields: [markedById], references: [id])
+  segments WorkSegment[]
+
+  @@unique([date, workerId])
+}
+
+model WorkSegment {
+  id           String    @id @default(cuid())
+  attendanceId String
+  siteId       String
+  projectId    String?
+  startAt      DateTime
+  endAt        DateTime?
+  source       String    @default("ATTENDANCE") // ATTENDANCE MOVE
+
+  attendance Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  site       Site       @relation(fields: [siteId], references: [id])
+  project    Project?   @relation(fields: [projectId], references: [id])
+}
+
+model TimesheetExport {
+  id          String   @id @default(cuid())
+  cycleStart  String
+  cycleEnd    String
+  fileId      String
+  createdById String
+  createdAt   DateTime @default(now())
+
+  file      FileObject @relation(fields: [fileId], references: [id])
+  createdBy User       @relation(fields: [createdById], references: [id])
+}
+
+// ───────────────────────── Manpower moves ─────────────────────────
+
+model ManpowerMove {
+  id          String    @id @default(cuid())
+  fromSiteId  String
+  toSiteId    String
+  moveAt      DateTime
+  reason      String // EMERGENCY EXTRA MATERIAL OTHER
+  note        String?
+  voiceFileId String?
+  appliedAt   DateTime?
+  tripId      String?
+  status      String    @default("PENDING") // PENDING APPLIED APPROVED RETURNED
+  createdById String
+  clientId    String?   @unique
+  createdAt   DateTime  @default(now())
+
+  fromSite  Site                 @relation("MoveFrom", fields: [fromSiteId], references: [id])
+  toSite    Site                 @relation("MoveTo", fields: [toSiteId], references: [id])
+  trip      Trip?                @relation(fields: [tripId], references: [id])
+  createdBy User                 @relation(fields: [createdById], references: [id])
+  workers   ManpowerMoveWorker[]
+}
+
+model ManpowerMoveWorker {
+  id       String @id @default(cuid())
+  moveId   String
+  workerId String
+
+  move   ManpowerMove @relation(fields: [moveId], references: [id], onDelete: Cascade)
+  worker Worker       @relation(fields: [workerId], references: [id])
+
+  @@unique([moveId, workerId])
+}
+
+// ───────────────────────── Logistics ─────────────────────────
+
+model VehiclePlan {
+  id        String   @id @default(cuid())
+  date      String   @unique
+  status    String   @default("DRAFT") // DRAFT SUBMITTED APPROVED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trips Trip[]
+}
+
+model Trip {
+  id              String    @id @default(cuid())
+  planId          String?
+  date            String
+  vehicleId       String
+  driverId        String?
+  fromSiteId      String
+  toSiteId        String
+  plannedOut      DateTime
+  plannedReturn   DateTime
+  startedAt       DateTime?
+  deliveredAt     DateTime?
+  returnedAt      DateTime?
+  purpose         String?
+  materialsText   String?
+  deliveryPhotoId String?
+  status          String    @default("PLANNED") // PLANNED STARTED DELIVERED RETURNED CANCELLED
+  clientId        String?   @unique
+  createdAt       DateTime  @default(now())
+
+  plan       VehiclePlan?    @relation(fields: [planId], references: [id])
+  vehicle    Vehicle         @relation(fields: [vehicleId], references: [id])
+  driver     User?           @relation(fields: [driverId], references: [id])
+  fromSite   Site            @relation("TripFrom", fields: [fromSiteId], references: [id])
+  toSite     Site            @relation("TripTo", fields: [toSiteId], references: [id])
+  passengers TripPassenger[]
+  moves      ManpowerMove[]
+}
+
+model TripPassenger {
+  id       String @id @default(cuid())
+  tripId   String
+  workerId String
+
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id])
+
+  @@unique([tripId, workerId])
+}
+
+model VehicleCheck {
+  id         String   @id @default(cuid())
+  vehicleId  String
+  driverId   String
+  date       String
+  tyresOk    Boolean
+  oilOk      Boolean
+  lightsOk   Boolean
+  damageNote String?
+  photoId    String?
+  clientId   String?  @unique
+  createdAt  DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  driver  User    @relation(fields: [driverId], references: [id])
+}
+
+model DriverBill {
+  id          String   @id @default(cuid())
+  type        String // FUEL SALIK FINE
+  vehicleId   String
+  driverId    String
+  date        String
+  amountFils  Int?
+  odometer    Int?
+  photoId     String
+  voiceFileId String?
+  clientId    String?  @unique
+  createdAt   DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  driver  User    @relation(fields: [driverId], references: [id])
+}
+
+// ───────────────────────── Duties, reports, queries ─────────────────────────
+
+model Duty {
+  id           String    @id @default(cuid())
+  projectId    String
+  title        String
+  detail       String?
+  assignedById String
+  assigneeId   String
+  deadline     DateTime
+  status       String    @default("OPEN") // OPEN DONE CANCELLED
+  doneAt       DateTime?
+  donePhotoId  String?
+  createdAt    DateTime  @default(now())
+
+  project    Project @relation(fields: [projectId], references: [id])
+  assignedBy User    @relation("DutyAssigner", fields: [assignedById], references: [id])
+  assignee   User    @relation("DutyAssignee", fields: [assigneeId], references: [id])
+}
+
+model DailyReport {
+  id        String   @id @default(cuid())
+  projectId String
+  date      String
+  authorId  String
+  manpower  Json?
+  workDone  String?
+  issues    String?
+  nextDay   String?
+  status    String   @default("DRAFT")
+  clientId  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id])
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@unique([projectId, date, authorId])
+}
+
+model SafetyChecklist {
+  id        String   @id @default(cuid())
+  projectId String
+  date      String
+  byId      String
+  items     Json
+  photoId   String?
+  clientId  String?  @unique
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id])
+  by      User    @relation(fields: [byId], references: [id])
+}
+
+model SiteQuery {
+  id                String    @id @default(cuid())
+  ref               String    @unique
+  projectId         String
+  raisedById        String
+  subject           String
+  question          String
+  drawingRevisionId String?
+  status            String    @default("OPEN") // OPEN ANSWERED CLOSED
+  answer            String?
+  answeredById      String?
+  answeredAt        DateTime?
+  clientId          String?   @unique
+  createdAt         DateTime  @default(now())
+
+  project         Project          @relation(fields: [projectId], references: [id])
+  raisedBy        User             @relation("QueryRaiser", fields: [raisedById], references: [id])
+  answeredBy      User?            @relation("QueryAnswerer", fields: [answeredById], references: [id])
+  drawingRevision DrawingRevision? @relation(fields: [drawingRevisionId], references: [id])
+}
+
+model Attachment {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  fileId     String
+  caption    String?
+  createdAt  DateTime @default(now())
+
+  file FileObject @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+}
+
+// ───────────────────────── Materials ─────────────────────────
+
+model Material {
+  id         String   @id @default(cuid())
+  name       String
+  discipline String // ELE PLB HVAC FLS GEN
+  unit       String?
+  keySpec    String?
+  createdAt  DateTime @default(now())
+
+  submittals   MaterialSubmittal[]
+  boqLines     BoqLine[]
+  requestLines MaterialRequestLine[]
+
+  @@unique([name, discipline])
+}
+
+model MaterialSubmittal {
+  id         String   @id @default(cuid())
+  materialId String
+  projectId  String? // null = applies to all projects
+  brand      String
+  msNo       String?
+  revision   String?
+  status     String // DRAFT UNDER_REVIEW APPROVED APPROVED_WITH_COMMENTS REJECTED CLOSED
+  spec       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  material     Material              @relation(fields: [materialId], references: [id])
+  project      Project?              @relation(fields: [projectId], references: [id])
+  requestLines MaterialRequestLine[]
+}
+
+model BoqLine {
+  id          String  @id @default(cuid())
+  projectId   String
+  materialId  String
+  description String?
+  qty         Float
+  unit        String?
+  rateFils    Int?
+
+  project  Project  @relation(fields: [projectId], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
+
+  @@unique([projectId, materialId])
+}
+
+model MaterialRequest {
+  id          String    @id @default(cuid())
+  ref         String    @unique
+  projectId   String
+  requesterId String
+  neededBy    String?
+  status      String    @default("DRAFT")
+  totalFils   Int?
+  lpoNo       String?
+  orderedAt   DateTime?
+  clientId    String?   @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  project   Project               @relation(fields: [projectId], references: [id])
+  requester User                  @relation(fields: [requesterId], references: [id])
+  lines     MaterialRequestLine[]
+}
+
+model MaterialRequestLine {
+  id           String  @id @default(cuid())
+  requestId    String
+  materialId   String
+  submittalId  String?
+  brand        String?
+  spec         String?
+  qty          Float
+  unit         String?
+  rateFils     Int?
+
+  request    MaterialRequest    @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  material   Material           @relation(fields: [materialId], references: [id])
+  submittal  MaterialSubmittal? @relation(fields: [submittalId], references: [id])
+  highAlerts HighAlert[]
+}
+
+model HighAlert {
+  id            String    @id @default(cuid())
+  requestLineId String
+  type          String // BRAND_NOT_APPROVED QTY_OVER_BOQ
+  detail        String
+  resolvedById  String?
+  resolvedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  requestLine MaterialRequestLine @relation(fields: [requestLineId], references: [id], onDelete: Cascade)
+  resolvedBy  User?               @relation(fields: [resolvedById], references: [id])
+}
+
+// ───────────────────────── Documents ─────────────────────────
+
+model Drawing {
+  id         String   @id @default(cuid())
+  ref        String   @unique // e.g. NBK-SHD-HVAC-005
+  projectId  String
+  number     String
+  title      String
+  discipline String
+  docType    String   @default("SHD")
+  createdAt  DateTime @default(now())
+
+  project   Project           @relation(fields: [projectId], references: [id])
+  revisions DrawingRevision[]
+}
+
+model DrawingRevision {
+  id              String    @id @default(cuid())
+  drawingId       String
+  rev             String
+  status          String // per 7.5 status list
+  forConstruction Boolean   @default(false)
+  fileId          String
+  releasedById    String?
+  releasedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  drawing      Drawing              @relation(fields: [drawingId], references: [id], onDelete: Cascade)
+  file         FileObject           @relation(fields: [fileId], references: [id])
+  releasedBy   User?                @relation(fields: [releasedById], references: [id])
+  calibrations DrawingCalibration[]
+  measurements DrawingMeasurement[]
+  siteQueries  SiteQuery[]
+
+  @@unique([drawingId, rev])
+}
+
+model DrawingCalibration {
+  id         String   @id @default(cuid())
+  revisionId String
+  page       Int
+  pxLength   Float
+  realMm     Float
+  byId       String
+  createdAt  DateTime @default(now())
+
+  revision DrawingRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  by       User            @relation(fields: [byId], references: [id])
+
+  @@unique([revisionId, page])
+}
+
+model DrawingMeasurement {
+  id         String   @id @default(cuid())
+  revisionId String
+  page       Int
+  points     Json
+  lengthMm   Float
+  label      String?
+  byId       String
+  createdAt  DateTime @default(now())
+
+  revision DrawingRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  by       User            @relation(fields: [byId], references: [id])
+}
+
+// ───────────────────────── Files, notifications, sync ─────────────────────────
+
+model FileObject {
+  id           String    @id @default(cuid())
+  path         String
+  originalName String?
+  mime         String
+  size         Int
+  sha256       String
+  kind         String // PHOTO VOICE PDF XLSX OTHER
+  projectId    String?
+  module       String
+  uploadedById String
+  mirroredAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  project          Project?          @relation(fields: [projectId], references: [id])
+  uploadedBy       User              @relation(fields: [uploadedById], references: [id])
+  attachments      Attachment[]
+  drawingRevisions DrawingRevision[]
+  timesheetExports TimesheetExport[]
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String
+  type       String
+  title      String
+  body       String?
+  link       String?
+  entityType String?
+  entityId   String?
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+model SyncReceipt {
+  id               String   @id @default(cuid())
+  clientMutationId String   @unique
+  userId           String
+  receivedAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
