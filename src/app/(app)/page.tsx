@@ -11,6 +11,7 @@ import DriverScreen from "@/components/driver/DriverScreen";
 import HighAlertPanel from "@/components/HighAlertPanel";
 import PendingPanel from "@/components/dashboard/PendingPanel";
 import RoleCards from "@/components/dashboard/RoleCards";
+import InstallApp from "@/components/InstallApp";
 
 const VISIT_GAP_MS = 30 * 60 * 1000;
 
@@ -34,6 +35,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     return (
       <>
         <h1>{t("hello", { name: me.displayName })}</h1>
+        <InstallApp dismissible />
         <DriverScreen />
       </>
     );
@@ -47,6 +49,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     <>
       {sp.denied && <p className="notice notice-error">{tc("denied")}</p>}
       <h1>{t("hello", { name: me.displayName })}</h1>
+      <InstallApp dismissible />
       {/* pinned at the top for SE and PE only */}
       <HighAlertPanel user={me} />
       <div className="dash">
