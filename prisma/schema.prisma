@@ -688,6 +688,7 @@ model Drawing {
   title      String
   discipline String
   docType    String   @default("SHD")
+  createdById String?
   createdAt  DateTime @default(now())
 
   project   Project           @relation(fields: [projectId], references: [id])
@@ -703,6 +704,9 @@ model DrawingRevision {
   fileId          String
   releasedById    String?
   releasedAt      DateTime?
+  notes           String?
+  pageCount       Int?
+  uploadedById    String?
   createdAt       DateTime  @default(now())
 
   drawing      Drawing              @relation(fields: [drawingId], references: [id], onDelete: Cascade)
@@ -738,6 +742,7 @@ model DrawingMeasurement {
   lengthMm   Float
   label      String?
   byId       String
+  clientId   String?  @unique
   createdAt  DateTime @default(now())
 
   revision DrawingRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)

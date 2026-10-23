@@ -61,7 +61,7 @@ export const NAV: NavGroup[] = [
     key: "documents",
     icon: "▦",
     items: [
-      { key: "drawings", href: "/m/drawings", roles: [...OFFICE_SITE, "DESIGN", "EST"], stage: "M6" },
+      { key: "drawings", href: "/m/drawings", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "COORD", "DESIGN", "EST", "HEAD_SUP", "SUP", "HVAC_SUP"] },
       { key: "siteQueries", href: "/m/site-queries", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "ADMIN", "DESIGN", "PM", "OPS", "COORD"] },
       { key: "authority", href: "/m/authority", roles: ["ADMIN", "PE", "OPS", "PM", "DESIGN", "COORD"], stage: "P3" },
     ],

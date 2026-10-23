@@ -141,6 +141,26 @@ const mutationSchemas = [
         .max(40),
     }),
   }),
+  z.object({
+    ...base,
+    type: z.literal("drawing.calibrate"),
+    payload: z.object({
+      revisionId: z.string().min(1),
+      page: z.number().int().min(1),
+      points: z.tuple([z.tuple([z.number(), z.number()]), z.tuple([z.number(), z.number()])]),
+      realMm: z.number().positive().max(1_000_000),
+    }),
+  }),
+  z.object({
+    ...base,
+    type: z.literal("drawing.measure"),
+    payload: z.object({
+      revisionId: z.string().min(1),
+      page: z.number().int().min(1),
+      points: z.array(z.tuple([z.number(), z.number()])).min(2).max(200),
+      label: z.string().max(100).optional(),
+    }),
+  }),
 ] as const;
 
 export const mutationSchema = z.discriminatedUnion("type", mutationSchemas);

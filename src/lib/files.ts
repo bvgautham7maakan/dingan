@@ -49,7 +49,9 @@ export async function saveUpload(opts: {
       return existing;
     }
   }
-  if (opts.buf.length === 0 || opts.buf.length > MAX_UPLOAD_BYTES) throw new UploadError("bad_size");
+  // drawings can be large; photos and voice notes stay at 15 MB
+  const limit = opts.allow?.length === 1 && opts.allow[0] === "PDF" ? 60 * 1024 * 1024 : MAX_UPLOAD_BYTES;
+  if (opts.buf.length === 0 || opts.buf.length > limit) throw new UploadError("bad_size");
   const type = sniff(opts.buf);
   if (!type || (opts.allow && !opts.allow.includes(type.kind))) throw new UploadError("bad_type");
 

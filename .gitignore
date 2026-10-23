@@ -12,3 +12,4 @@ prisma/*.db-journal
 *.log
 next-env.d.ts
 tsconfig.tsbuildinfo
+public/pdf.worker.min.mjs

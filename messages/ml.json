@@ -217,5 +217,16 @@
     "otherBrand": "മറ്റ് ബ്രാൻഡ്",
     "send": "അപേക്ഷ അയക്കുക ({count})",
     "search": "സാധനം തിരയുക"
+  },
+  "dwg": {
+    "saveOffline": "ഓഫ്‌ലൈനായി സേവ് ചെയ്യുക",
+    "savedOffline": "ഫോണിൽ സേവ് ചെയ്തു",
+    "fit": "മുഴുവൻ",
+    "tool_pan": "✋ നീക്കുക",
+    "tool_calibrate": "📏 സ്കെയിൽ",
+    "tool_measure": "↔ അളക്കുക",
+    "tool_chain": "⤳ തുടർ അളവ്",
+    "knownMm": "അറിയാവുന്ന നീളം (mm)",
+    "saveMeasure": "സേവ്"
   }
 }

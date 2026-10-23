@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
@@ -18,6 +19,8 @@ export default async function QueryDetail({ params, searchParams }: { params: Pr
   if (!q) notFound();
   if (isSiteUser(me.roles) && !hasAnyRole(me.roles, ["HEAD_SUP"]) && q.raisedById !== me.id) redirect("/?denied=1");
   const files = await attachmentsOf("SITE_QUERY", id);
+  // link the drawing ref to its released revision when it is in the register
+  const dwg = q.drawingRef ? await db.drawing.findUnique({ where: { ref: q.drawingRef.trim().toUpperCase() }, include: { revisions: { where: { forConstruction: true } } } }) : null;
   const canAnswer = hasAnyRole(me.roles, QUERY_ANSWER_ROLES) && q.status !== "CLOSED";
   const canClose = q.status !== "CLOSED" && (q.raisedById === me.id || hasAnyRole(me.roles, ["SE", "PE", "ADMIN"]));
   return (
@@ -26,7 +29,12 @@ export default async function QueryDetail({ params, searchParams }: { params: Pr
       <p className="muted">
         {q.project.code} · {q.raisedBy.displayName} · {fmtDateTime(q.createdAt)}
         {q.discipline && ` · ${q.discipline}`}
-        {q.drawingRef && ` · ${t("drawingRef")}: ${q.drawingRef}`}
+        {q.drawingRef && (
+          <>
+            {" · "}{t("drawingRef")}:{" "}
+            {dwg?.revisions[0] ? <Link href={`/m/drawings/${dwg.revisions[0].id}`}>{q.drawingRef}</Link> : q.drawingRef}
+          </>
+        )}
       </p>
       <p className={`status ${q.status === "OPEN" ? "status-blue" : q.status === "ANSWERED" ? "status-green" : "status-black"}`}>{t(`status_${q.status}`)}</p>
       {sp.answered && <p className="notice notice-ok" role="status">✓ {t("answerSent")}</p>}

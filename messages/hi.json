@@ -217,5 +217,16 @@
     "otherBrand": "दूसरा ब्रांड",
     "send": "माँग भेजें ({count})",
     "search": "सामान खोजें"
+  },
+  "dwg": {
+    "saveOffline": "ऑफ़लाइन सेव करें",
+    "savedOffline": "फ़ोन में सेव",
+    "fit": "पूरा",
+    "tool_pan": "✋ हटाएँ",
+    "tool_calibrate": "📏 स्केल",
+    "tool_measure": "↔ नापें",
+    "tool_chain": "⤳ लगातार नाप",
+    "knownMm": "पता लंबाई (mm)",
+    "saveMeasure": "सेव"
   }
 }

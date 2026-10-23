@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M5 built** – awaiting sign-off before M6.
+Status: **M6 built** – awaiting sign-off before M7.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -232,3 +232,18 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Rates | Estimator enters rates; pre-filled from BOQ rate where set; hidden from no-AED roles on every screen and API | Brief 5 |
 | Units | Supervisor picks unit chips (nos, m, m², set, roll, length, kg, ltr, box); MS log has no units | Minimal typing |
 | BOQ | Per project; edit inline or import Excel (header row with Material, Qty, optional Discipline, Unit, Rate); unknown materials are added | Brief 7.5 |
+
+## 10. Decisions taken during M6
+
+| Item | Decision | Why |
+|---|---|---|
+| Drawing ref | `<PROJECT>-<TYPE>-<DISCIPLINE>-<NNN>`, number auto-increments per project/type/discipline; types SHD, DD, ASB, SK | Brief 7.6 |
+| Upload | Design, Coordinator, PE, Admin; PDF only (checked from the file bytes), max 60 MB; via `/api/drawings` (server actions have a 1 MB body limit) | Drawings are large |
+| For construction | Only Design releases; releasing a revision supersedes the previous FC revision; site roles (SUP, HVAC_SUP, HEAD_SUP) see and can download only FC revisions (enforced on the file endpoint too) | Brief section 6 |
+| Viewer | pdf.js 4.10; big − / + / Fit buttons, page arrows, scroll to pan (no pinch needed) | Brief 7.6 |
+| Calibration | Per page: tap both ends of a known dimension, enter mm; scale shown as "≈ 1:50" (A-size sheets) | Brief 7.6 |
+| Measuring | Point-to-point and chain; points stored in PDF page units so results do not depend on zoom; saved with the drawing (offline-capable) | Brief 7.6 |
+| Accuracy | Test: calibrate on 1,000 mm, measure 3,500 mm → 3,500 mm (limit ±1%) | Acceptance 10 |
+| Snap to lines | Not in the pilot – tap accuracy depends on zoom; zoom in before tapping | Phase 2 with DWG |
+| Offline drawings | "Save offline" stores the PDF and viewer page in a separate phone cache that survives app updates; the drawing opens with no signal | Brief 7.6 |
+| Site query link | A query's drawing ref links to the released revision when it exists in the register | Convenience |

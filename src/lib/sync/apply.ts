@@ -11,6 +11,7 @@ import { submitReport } from "../site/reports";
 import { submitSafety } from "../site/safety";
 import { raiseQuery } from "../site/queries";
 import { createRequest } from "../materials/server";
+import { calibrate, measure } from "../drawings/server";
 import type { Mutation } from "./schema";
 
 export { MutationError };
@@ -30,6 +31,8 @@ export async function applyMutation(user: CurrentUser, m: Mutation): Promise<"ap
     else if (m.type === "safety.submit") await submitSafety(user, m);
     else if (m.type === "query.create") await raiseQuery(user, m);
     else if (m.type === "mr.create") await createRequest(user, m);
+    else if (m.type === "drawing.calibrate") await calibrate(user, m);
+    else if (m.type === "drawing.measure") await measure(user, m);
   } catch (e) {
     if (e instanceof ApprovalError) throw new MutationError(e.message);
     throw e;

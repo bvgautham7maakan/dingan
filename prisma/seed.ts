@@ -3,7 +3,10 @@
  */
 import { PrismaClient } from "@prisma/client";
 import { hash } from "@node-rs/argon2";
-import { readFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { createHash } from "crypto";
+import path from "path";
+import { drawingPdf } from "./demo-pdf";
 
 const db = new PrismaClient();
 const TEMP = process.env.SEED_TEMP_PASSWORD || "Kem@Temp2026";
@@ -171,6 +174,7 @@ async function main() {
   await seedDemoSite(ids);
   await seedMaterials();
   await seedDemoMaterials(ids);
+  await seedDemoDrawings(ids);
 
   console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, ${emps.length} workers.`);
 }
@@ -446,6 +450,40 @@ async function seedDemoMaterials(ids: Record<string, string>) {
     });
     await flow(r.id, ids["vishnu"], true, 1);
     await db.notification.create({ data: { userId: ids["deepak"], type: "APPROVAL", title: "Material request SAFE-MR-001 – waiting for you", link: `/m/material-requests/${r.id}`, entityType: "MATERIAL_REQUEST", entityId: r.id } });
+  }
+}
+
+/** Demo: 3 NBK drawings (PDF generated); two released for construction. */
+async function seedDemoDrawings(ids: Record<string, string>) {
+  if ((await db.drawing.count()) > 0) return;
+  const nbk = await db.project.findUniqueOrThrow({ where: { code: "NBK" } });
+  const root = path.resolve(process.env.UPLOAD_DIR || "data/uploads");
+  const dir = path.join(root, "NBK", "drawings", new Date().toISOString().slice(0, 7));
+  mkdirSync(dir, { recursive: true });
+  const list: [string, string, string, string, boolean][] = [
+    ["005", "HVAC", "Level 2 ductwork layout", "R1", true],
+    ["006", "HVAC", "Level 2 CHW piping layout", "R0", true],
+    ["011", "ELE", "Level 2 cable tray & lighting layout", "R0", false],
+  ];
+  for (const [number, discipline, title, rev, fc] of list) {
+    const ref = `NBK-SHD-${discipline}-${number}`;
+    const buf = await drawingPdf({
+      ref, title, rev, project: "NBK", scale: 50, ducts: discipline === "HVAC",
+      dims: [{ x: 50, y: 80, mm: 1000 }, { x: 50, y: 70, mm: 6000 }, { x: 330, y: 80, mm: 4500, vertical: true }],
+    });
+    const file = await db.fileObject.create({
+      data: { path: "", mime: "application/pdf", size: buf.length, sha256: createHash("sha256").update(buf).digest("hex"), kind: "PDF", module: "drawings", projectId: nbk.id, uploadedById: ids["alwin"], originalName: `${ref}.pdf` },
+    });
+    const abs = path.join(dir, `${file.id}.pdf`);
+    writeFileSync(abs, buf);
+    await db.fileObject.update({ where: { id: file.id }, data: { path: path.relative(root, abs) } });
+    const d = await db.drawing.create({ data: { ref, number, projectId: nbk.id, title, discipline, docType: "SHD", createdById: ids["alwin"] } });
+    await db.drawingRevision.create({
+      data: {
+        drawingId: d.id, rev, fileId: file.id, uploadedById: ids["alwin"], status: fc ? "APPROVED" : "UNDER_REVIEW", forConstruction: fc,
+        releasedById: fc ? ids["alwin"] : null, releasedAt: fc ? new Date() : null,
+      },
+    });
   }
 }
 
