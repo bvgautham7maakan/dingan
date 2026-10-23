@@ -776,5 +776,12 @@
     "moves": "Recent moves",
     "reports": "Daily reports",
     "mrs": "Open material requests"
+  },
+  "install": {
+    "title": "Install the app",
+    "why": "Add KEM Site to your home screen. It opens like an app and works without signal.",
+    "button": "⬇ Install app",
+    "ios": "On iPhone: tap Share (□↑) in Safari, then \"Add to Home Screen\".",
+    "notNow": "Not now"
   }
 }
