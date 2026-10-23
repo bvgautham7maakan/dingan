@@ -52,8 +52,8 @@ export const NAV: NavGroup[] = [
     key: "materials",
     icon: "▤",
     items: [
-      { key: "materialRequests", href: "/m/material-requests", roles: [...OFFICE_SITE, "EST", "PROC"], stage: "M5" },
-      { key: "materialMaster", href: "/m/material-master", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "EST", "COORD", "PROC", "DESIGN"], stage: "M5" },
+      { key: "materialRequests", href: "/m/material-requests", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "ADMIN", "EST", "PM", "OPS", "BUL", "PROC", "COORD"] },
+      { key: "materialMaster", href: "/m/material-master", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "EST", "COORD", "PROC", "DESIGN"] },
       { key: "priceList", href: "/m/price-list", roles: ["ADMIN", "PE", "BUL", "OPS", "EST", "PROC"], stage: "P2" },
     ],
   },

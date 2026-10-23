@@ -169,6 +169,8 @@ async function main() {
   await seedDemoAttendance(ids["renjith"], ids["sanu"]);
   await seedDemoLogistics(ids);
   await seedDemoSite(ids);
+  await seedMaterials();
+  await seedDemoMaterials(ids);
 
   console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, ${emps.length} workers.`);
 }
@@ -325,6 +327,126 @@ async function seedDemoSite(ids: Record<string, string>) {
       ] },
     },
   });
+}
+
+/** Material master + MS entries from the KEM MS log (reference/ms-log.json). Projects not in the app are skipped. */
+async function seedMaterials() {
+  type Row = { project: string | null; discipline: string; material: string; brand: string | null; msNo: string | null; revision: string | null; status: string; keySpec: string | null; supplier: string | null; remarks: string | null };
+  const rows = JSON.parse(readFileSync("reference/ms-log.json", "utf8")) as Row[];
+  const projects = Object.fromEntries((await db.project.findMany()).map((p) => [p.code, p.id]));
+  let added = 0;
+  for (const r of rows) {
+    const name = r.material.trim().toUpperCase().replace(/\s+/g, " ");
+    const discipline = ["ELE", "PLB", "HVAC", "FLS", "GEN"].includes(r.discipline) ? r.discipline : "GEN";
+    const mat = await db.material.upsert({
+      where: { name_discipline: { name, discipline } },
+      update: {},
+      create: { name, discipline, keySpec: r.keySpec },
+    });
+    const projectId = r.project === "GENERAL" ? null : r.project ? projects[r.project] : undefined;
+    if (projectId === undefined || !r.brand) continue;
+    const exists = await db.materialSubmittal.findFirst({ where: { materialId: mat.id, projectId, brand: r.brand, msNo: r.msNo } });
+    if (exists) continue;
+    await db.materialSubmittal.create({
+      data: { materialId: mat.id, projectId, brand: r.brand, msNo: r.msNo, revision: r.revision, status: r.status, spec: r.keySpec, supplier: r.supplier, remarks: r.remarks },
+    });
+    added++;
+  }
+  if (added) console.log(`MS log: ${added} submittal entries.`);
+}
+
+/** Demo BOQ lines and two material requests: NBK with a HIGH-ALERT, Safe Tower clean and at the estimator. */
+async function seedDemoMaterials(ids: Record<string, string>) {
+  if ((await db.materialRequest.count()) > 0) return;
+  const mat = async (name: string) => db.material.findFirst({ where: { name } });
+  const nbk = await db.project.findUniqueOrThrow({ where: { code: "NBK" } });
+  const safe = await db.project.findUniqueOrThrow({ where: { code: "SAFE" } });
+  const boq: [string, string, number, string, number][] = [
+    ["NBK", "CHW PIPE INSULATION (NBR)", 600, "m", 38],
+    ["NBK", "CHW PIPES (ERW / SEAMLESS STEEL)", 450, "m", 95],
+    ["NBK", "AIR TERMINALS (GRILLES & DIFFUSERS)", 140, "nos", 210],
+    ["NBK", "DUCT INSULATION (NBR)", 1200, "m²", 55],
+    ["NBK", "CONDENSATE DRAIN PIPES & FITTINGS (UPVC)", 300, "m", 18],
+    ["SAFE", "ENERGY VALVE", 24, "nos", 2900],
+    ["SAFE", "SPRINKLERS (UPRIGHT / PENDENT / CONCEALED)", 900, "nos", 32],
+    ["SAFE", "CHW PIPE SUPPORT SYSTEM", 350, "set", 85],
+  ];
+  for (const [code, name, qty, unit, rate] of boq) {
+    const m = await mat(name);
+    if (!m) continue;
+    const projectId = code === "NBK" ? nbk.id : safe.id;
+    await db.boqLine.upsert({
+      where: { projectId_materialId: { projectId, materialId: m.id } },
+      update: {},
+      create: { projectId, materialId: m.id, qty, unit, rateFils: rate * 100 },
+    });
+  }
+
+  const flow = async (entityId: string, createdById: string, pm: boolean, done: number) => {
+    const steps: [string, string, string | null][] = [
+      ["SE / PE check", "SE,PE", null], ["Estimator – budget & rates", "EST", null],
+      pm ? ["Project Manager", "PM", ids["yadhu.s"]] : ["Operations Manager", "OPS", null],
+      ["BUL (above threshold)", "BUL", null], ["Procurement – order / LPO", "PROC", null],
+    ];
+    await db.approvalFlow.create({
+      data: {
+        entityType: "MATERIAL_REQUEST", entityId, chainCode: "MR", createdById, currentSeq: done + 1,
+        steps: { create: steps.map(([label, role, assigneeId], i) => ({
+          seq: i + 1, label, role, assigneeId, status: i < done ? "APPROVED" : i === done ? "PENDING" : "WAITING",
+          actedById: i < done ? ids["sachin"] : null, actedAt: i < done ? new Date() : null,
+        })) },
+      },
+    });
+  };
+
+  // NBK-MR-001: brand not in an approved MS, and quantity over BOQ (580 already + 80 > 600)
+  const ins = await mat("CHW PIPE INSULATION (NBR)");
+  const air = await mat("AIR TERMINALS (GRILLES & DIFFUSERS)");
+  if (ins && air) {
+    await db.materialRequest.create({
+      data: {
+        ref: "NBK-MR-000", projectId: nbk.id, requesterId: ids["sanu"], status: "ORDERED", lpoNo: "SABR-LPO-2026-0412", totalFils: 580 * 3800,
+        lines: { create: [{ materialId: ins.id, brand: "AEROFOAM (HIRA)", qty: 580, unit: "m", rateFils: 3800 }] },
+      },
+    });
+    const r = await db.materialRequest.create({
+      data: {
+        ref: "NBK-MR-001", projectId: nbk.id, requesterId: ids["sanu"], status: "UNDER_REVIEW", neededBy: null, note: "Level 3 CHW risers",
+        lines: { create: [
+          { materialId: ins.id, brand: "ARMAFLEX", qty: 80, unit: "m", rateFils: 3800 },
+          { materialId: air.id, brand: "TECNALCO", qty: 20, unit: "nos", rateFils: 21000 },
+        ] },
+      },
+      include: { lines: true },
+    });
+    await db.materialRequest.update({ where: { id: r.id }, data: { totalFils: 80 * 3800 + 20 * 21000 } });
+    const insLine = r.lines.find((l) => l.materialId === ins.id)!;
+    const airLine = r.lines.find((l) => l.materialId === air.id)!;
+    await db.highAlert.createMany({ data: [
+      { requestLineId: insLine.id, type: "BRAND_NOT_APPROVED", detail: "CHW PIPE INSULATION (NBR): no approved MS for this project" },
+      { requestLineId: insLine.id, type: "QTY_OVER_BOQ", detail: "CHW PIPE INSULATION (NBR): 80 m now + 580 m already requested = 660 m > BOQ 600 m" },
+      { requestLineId: airLine.id, type: "BRAND_NOT_APPROVED", detail: "AIR TERMINALS (GRILLES & DIFFUSERS): no approved MS for this project" },
+    ] });
+    await flow(r.id, ids["sanu"], true, 0);
+    for (const u of [ids["sachin"], ids["dinga"]])
+      await db.notification.create({ data: { userId: u, type: "HIGH_ALERT", title: "HIGH-ALERT NBK-MR-001: 3 issue(s)", link: `/m/material-requests/${r.id}`, entityType: "MATERIAL_REQUEST", entityId: r.id } });
+  }
+  // SAFE-MR-001: approved brands, within BOQ – checked by SE, now with the estimator
+  const valve = await mat("ENERGY VALVE");
+  const spr = await mat("SPRINKLERS (UPRIGHT / PENDENT / CONCEALED)");
+  if (valve && spr) {
+    const r = await db.materialRequest.create({
+      data: {
+        ref: "SAFE-MR-001", projectId: safe.id, requesterId: ids["vishnu"], status: "UNDER_REVIEW",
+        lines: { create: [
+          { materialId: valve.id, brand: "BELIMO", spec: "Energy valve", qty: 6, unit: "nos" },
+          { materialId: spr.id, brand: "BRISTOL", spec: "Sprinkler heads", qty: 120, unit: "nos" },
+        ] },
+      },
+    });
+    await flow(r.id, ids["vishnu"], true, 1);
+    await db.notification.create({ data: { userId: ids["deepak"], type: "APPROVAL", title: "Material request SAFE-MR-001 – waiting for you", link: `/m/material-requests/${r.id}`, entityType: "MATERIAL_REQUEST", entityId: r.id } });
+  }
 }
 
 main()

@@ -7,6 +7,7 @@ import { fmtDateTime } from "@/lib/time";
 import { isSiteUser } from "@/lib/roles";
 import Status from "@/components/Status";
 import DriverScreen from "@/components/driver/DriverScreen";
+import HighAlertPanel from "@/components/HighAlertPanel";
 
 // M1 dashboard: common frame for all roles. Role-specific cards arrive in M7.
 export default async function Dashboard({
@@ -38,6 +39,8 @@ export default async function Dashboard({
     <>
       {sp.denied && <p className="notice notice-error">{tc("denied")}</p>}
       <h1>{t("hello", { name: me.displayName })}</h1>
+      {/* pinned at the top for SE and PE only */}
+      <HighAlertPanel user={me} />
       <div className="dash">
         <div>
           <section className="panel" aria-labelledby="pending-h">

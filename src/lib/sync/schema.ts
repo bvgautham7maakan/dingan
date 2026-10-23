@@ -120,6 +120,27 @@ const mutationSchemas = [
       voiceClientId: clientFile.optional(),
     }),
   }),
+  z.object({
+    ...base,
+    type: z.literal("mr.create"),
+    payload: z.object({
+      projectId: z.string().min(1),
+      neededBy: day.optional(),
+      note: z.string().max(1000).optional(),
+      lines: z
+        .array(
+          z.object({
+            materialId: z.string().min(1),
+            brand: z.string().max(100).optional(),
+            qty: z.number().positive().max(1_000_000),
+            unit: z.string().max(20).optional(),
+            note: z.string().max(500).optional(),
+          }),
+        )
+        .min(1)
+        .max(40),
+    }),
+  }),
 ] as const;
 
 export const mutationSchema = z.discriminatedUnion("type", mutationSchemas);

@@ -7,6 +7,8 @@ const MAP: Record<string, { cls: string; icon: string }> = {
   REJECTED: { cls: "status-red", icon: "✕" },
   CLOSED: { cls: "status-black", icon: "—" },
   ACTIVE: { cls: "status-green", icon: "●" },
+  ORDERED: { cls: "status-green", icon: "✓" },
+  RETURNED: { cls: "status-red", icon: "↩" },
   INACTIVE: { cls: "status-grey", icon: "○" },
   ON_HOLD: { cls: "status-amber", icon: "‖" },
   LEFT: { cls: "status-grey", icon: "○" },

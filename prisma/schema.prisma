@@ -601,6 +601,8 @@ model MaterialSubmittal {
   revision   String?
   status     String // DRAFT UNDER_REVIEW APPROVED APPROVED_WITH_COMMENTS REJECTED CLOSED
   spec       String?
+  supplier   String?
+  remarks    String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -634,6 +636,7 @@ model MaterialRequest {
   totalFils   Int?
   lpoNo       String?
   orderedAt   DateTime?
+  note        String?
   clientId    String?   @unique
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -653,6 +656,7 @@ model MaterialRequestLine {
   qty          Float
   unit         String?
   rateFils     Int?
+  note         String?
 
   request    MaterialRequest    @relation(fields: [requestId], references: [id], onDelete: Cascade)
   material   Material           @relation(fields: [materialId], references: [id])
@@ -667,6 +671,7 @@ model HighAlert {
   detail        String
   resolvedById  String?
   resolvedAt    DateTime?
+  resolution    String?
   createdAt     DateTime  @default(now())
 
   requestLine MaterialRequestLine @relation(fields: [requestLineId], references: [id], onDelete: Cascade)

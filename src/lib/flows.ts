@@ -3,5 +3,6 @@ import "server-only";
 import "./moves/server";
 import "./logistics/server";
 import "./site/reports";
+import "./materials/server";
 
 export { act, flowView, pendingFor, ApprovalError } from "./approvals";

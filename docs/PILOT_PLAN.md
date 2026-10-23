@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M4 built** – awaiting sign-off before M5.
+Status: **M5 built** – awaiting sign-off before M6.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -215,3 +215,20 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Safety checklist | 12 items OK / Issue / N/A; "Mark all remaining OK"; an Issue needs a note and a photo and alerts Renjith + SE; Renjith/SE/PE see 7-day overview and which sites have not checked today | Brief scope item 7 |
 | Site queries | Ref `<PROJECT>-SQ-001`; discipline, drawing ref (free text until M6), photos, voice note; Design answers; requester notified; requester / SE / PE close | Brief section 6 |
 | Two-button forms | Approve and Return are separate server actions (a clicked button's value is not sent) | Bug found by the browser tests |
+
+## 9. Decisions taken during M5
+
+| Item | Decision | Why |
+|---|---|---|
+| Material master | Seeded from "MATERIAL SUBMITTAL LOG - ALL PROJECTS.xlsx" (191 rows → 115 materials, 143 MS entries); notes in `reference/ms-log-notes.md` | Brief section 1 |
+| Project mapping | "Al Saif Tower (Sanad)" → SAFE, "NBK Khalifa Park" → NBK, "Mangrove Villa 5105" → MANG; Lets Cafe and Jereh Office are not app projects (materials kept, MS entries skipped) | To confirm |
+| NBK MS status | The log has **no approved** NBK entries (22 under review, 11 draft), so every NBK request raises HIGH-ALERT until statuses are updated in Materials & MS brands | Real data |
+| Chain | SE or PE → Estimator (rates; total) → PM if the project has one, else Ops → BUL only if total > threshold (else shown "skipped") → Procurement (LPO no. = ordered) | Brief section 6 |
+| Threshold | Project's own BUL threshold if set, else company setting AED 100,000; "above" means strictly greater | Brief 6 |
+| Own requests | Nobody approves a step on an item they raised (applies to every chain) | Good practice |
+| Returned to requester | Requester raises a new request or closes the returned one | Keeps the audit trail simple |
+| Brand auto-fill | First approved brand pre-selected; other approved brands as chips; "Other brand" free text → HIGH-ALERT | Brief 7.5 |
+| HIGH-ALERT | Brand/spec not in an approved MS for the project; requested + already requested (open + ordered) > BOQ. Shown only to SE/PE (pinned on dashboard and request page; notification); SE/PE can mark an alert checked with a note | Brief 7.5 |
+| Rates | Estimator enters rates; pre-filled from BOQ rate where set; hidden from no-AED roles on every screen and API | Brief 5 |
+| Units | Supervisor picks unit chips (nos, m, m², set, roll, length, kg, ltr, box); MS log has no units | Minimal typing |
+| BOQ | Per project; edit inline or import Excel (header row with Material, Qty, optional Discipline, Unit, Rate); unknown materials are added | Brief 7.5 |
