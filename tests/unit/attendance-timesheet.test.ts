@@ -131,6 +131,13 @@ describe("timesheet from attendance", () => {
     expect(tsHead.length).toBe(2 + 30 + 13);
     expect(tsHead.slice(32)).toEqual(["Days worked", "Normal hrs", "OT 1.25 hrs", "OT 1.5 hrs", "AL days", "Sick days", "Other leave days", "Basic (AED)", "Hourly rate", "OT 1.25 amt (AED)", "OT 1.5 amt (AED)", "Total OT (AED)", "Gross (AED)"]);
     expect(wb.getWorksheet("Summary")!.getCell("A2").value).toBe("Workers timesheet summary  |  26-Sep-2026 to 25-Oct-2026");
+    // leave pay table in Settings
+    const settings: string[] = [];
+    wb.getWorksheet("Settings")!.eachRow((r) => settings.push((r.values as unknown[]).slice(1).join("|")));
+    expect(settings).toContain("AL|Annual leave|Yes");
+    expect(settings).toContain("SL|Sick / medical leave|Yes");
+    expect(settings).toContain("CL|Casual leave|No");
+    expect(settings).toContain("A|Absent|No");
     // Daily Log: 30 days × 5 workers
     expect(wb.getWorksheet("Daily Log")!.actualRowCount).toBe(1 + 30 * 5);
     const e02 = wb.getWorksheet("Timesheet")!.getRow(7);

@@ -223,8 +223,10 @@
     "leave": "Leave days",
     "other": "Other leave",
     "name": "Name",
-    "legend": "Cell = paid hours (normal + OT). OFF Sunday/holiday · AL annual · SL sick · CL leave · A absent · LEFT · blank = not entered. Black day header = Sunday / public holiday.",
-    "star": "* finish time not entered – standard 9-hour shift assumed."
+    "legend": "Cell = paid hours (normal + OT). OFF Sunday/holiday · AL annual (paid) · SL sick (paid) · CL leave (unpaid) · A absent (unpaid) · LEFT · blank = not entered. Black day header = Sunday / public holiday.",
+    "star": "* finish time not entered – standard 9-hour shift assumed.",
+    "paidLeave": "Paid leave days",
+    "unpaid": "Unpaid days"
   },
   "media": {
     "takePhoto": "Take photo",

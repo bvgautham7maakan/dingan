@@ -27,6 +27,22 @@ export type DayType = "Normal" | "Sunday" | "PH";
 /** Status codes as used in the workbook. P = present. */
 export type StatusCode = "P" | "OFF" | "AL" | "SL" | "CL" | "LV" | "A" | "LEFT" | "";
 
+/**
+ * Leave pay (confirmed by KEM, Oct 2026): annual leave (AL) and sick / medical leave (SL) are paid;
+ * casual leave (CL), leave type to be confirmed (LV) and absent (A) are unpaid.
+ * OFF (Sunday / public holiday / weekly off) and LEFT are not leave and are not counted.
+ */
+export const LEAVE_RULES: { code: StatusCode; meaning: string; paid: boolean | null }[] = [
+  { code: "AL", meaning: "Annual leave", paid: true },
+  { code: "SL", meaning: "Sick / medical leave", paid: true },
+  { code: "CL", meaning: "Casual leave", paid: false },
+  { code: "LV", meaning: "Leave – type to be confirmed", paid: false },
+  { code: "A", meaning: "Absent", paid: false },
+  { code: "OFF", meaning: "Sunday / public holiday / weekly off", paid: null },
+  { code: "LEFT", meaning: "After last working day", paid: null },
+];
+export const UNPAID_CODES = new Set(LEAVE_RULES.filter((r) => r.paid === false).map((r) => r.code));
+
 export type DayHours = { span: number; worked: number; normal: number; ot125: number; ot150: number; paid: number };
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -91,17 +107,21 @@ export type WorkerTotals = {
   ot150: number;
   alDays: number;
   sickDays: number;
+  /** CL + LV + A – the unpaid days (same as the workbook's "Other leave days" column) */
   otherLeaveDays: number;
+  /** AL + SL */
+  paidLeaveDays: number;
 };
 
 /** Timesheet right-hand totals (AH:AN). OFF, LEFT and blank are not counted. */
 export function totals(days: { status: StatusCode; hours: DayHours }[]): WorkerTotals {
-  const t: WorkerTotals = { daysWorked: 0, normal: 0, ot125: 0, ot150: 0, alDays: 0, sickDays: 0, otherLeaveDays: 0 };
+  const t: WorkerTotals = { daysWorked: 0, normal: 0, ot125: 0, ot150: 0, alDays: 0, sickDays: 0, otherLeaveDays: 0, paidLeaveDays: 0 };
   for (const { status, hours } of days) {
     if (status === "P") t.daysWorked++;
     if (status === "AL") t.alDays++;
     if (status === "SL") t.sickDays++;
-    if (status === "CL" || status === "LV" || status === "A") t.otherLeaveDays++;
+    if (UNPAID_CODES.has(status)) t.otherLeaveDays++;
+    if (status === "AL" || status === "SL") t.paidLeaveDays++;
     t.normal += hours.normal;
     t.ot125 += hours.ot125;
     t.ot150 += hours.ot150;

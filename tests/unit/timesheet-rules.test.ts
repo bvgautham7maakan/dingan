@@ -56,6 +56,12 @@ describe("brief rules (7.2), spelled out", () => {
   it("night shift 23:00–07:00 = full 8-hour day, no OT", () => {
     expect(computeDay("Normal", "P", spanFromTimes("23:00", "07:00"))).toMatchObject({ worked: 7, normal: 8, ot125: 0, paid: 8 });
   });
+  it("leave pay: AL and SL paid; CL, LV and A unpaid; OFF and LEFT not counted", () => {
+    const days = (["AL", "SL", "CL", "LV", "A", "OFF", "LEFT"] as StatusCode[]).map((status) => ({ status, hours: computeDay("Normal", status, 0) }));
+    const t = totals(days);
+    expect(t.paidLeaveDays).toBe(2);
+    expect(t.otherLeaveDays).toBe(3);
+  });
   it("leave days carry no hours", () => {
     for (const st of ["AL", "SL", "CL", "A", "OFF", "LV", "LEFT", ""] as StatusCode[])
       expect(computeDay("Normal", st, 9).paid).toBe(0);

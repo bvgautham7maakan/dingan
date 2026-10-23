@@ -44,7 +44,8 @@ export default async function TimesheetPage({ searchParams }: { searchParams: Pr
         <div className="card"><h3>{t("normal")}</h3><span className="big">{fmtH(g.normal)}</span></div>
         <div className="card"><h3>{t("ot125")}</h3><span className="big">{fmtH(g.ot125)}</span></div>
         <div className="card"><h3>{t("ot150")}</h3><span className="big">{fmtH(g.ot150)}</span></div>
-        <div className="card"><h3>{t("leave")}</h3><span className="big">{g.alDays + g.sickDays + g.otherLeaveDays}</span></div>
+        <div className="card"><h3>{t("paidLeave")}</h3><span className="big">{g.paidLeaveDays}</span><div className="caption">AL + SL</div></div>
+        <div className="card"><h3>{t("unpaid")}</h3><span className="big">{g.otherLeaveDays}</span><div className="caption">CL + LV + A</div></div>
       </div>
       <p className="caption">{t("legend")}</p>
 
@@ -67,7 +68,7 @@ export default async function TimesheetPage({ searchParams }: { searchParams: Pr
               <th>{t("ot150")}</th>
               <th>AL</th>
               <th>SL</th>
-              <th>{t("other")}</th>
+              <th title="CL + LV + A">{t("unpaid")}</th>
             </tr>
           </thead>
           <tbody>

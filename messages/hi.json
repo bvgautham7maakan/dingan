@@ -121,7 +121,9 @@
   },
   "ts": {
     "title": "टाइमशीट",
-    "export": "Excel डाउनलोड"
+    "export": "Excel डाउनलोड",
+    "paidLeave": "वेतन वाली छुट्टी",
+    "unpaid": "बिना वेतन दिन"
   },
   "media": {
     "takePhoto": "फ़ोटो लें",

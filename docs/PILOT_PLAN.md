@@ -272,3 +272,13 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Go-live | `SEED_DEMO=false` + `npm run reset-demo` gives master data only | Clean start after the demo |
 | PWA check | Chrome installability API instead of Lighthouse (PWA audit removed in Lighthouse 12) | Acceptance 11 |
 | Accessibility | axe WCAG 2 A/AA, no serious/critical issues on 11 key screens; scrollable tables keyboard-focusable | Brief section 9 |
+
+## 13. Confirmed by Dinga after M8
+
+| # | Question | Answer | Effect |
+|---|---|---|---|
+| 1 | NBK has no approved MS entries – every NBK request raises HIGH-ALERT until the log is updated | OK | No change; update statuses in Materials & MS brands |
+| 2 | "Al Saif Tower (Sanad)" in the MS log = Safe Tower | Yes | Mapping kept (SAFE) |
+| 3 | 20:00–08:00 shift = 8 h normal + 3 h OT ×1.25; is leave paid? | Yes; leave unpaid except annual and medical | AL and SL paid; CL, LV, A unpaid (= "Other leave days"); OFF and LEFT not counted. Shown on the timesheet screen (Paid leave / Unpaid days), in the Excel Settings sheet (leave table), Summary and the gross-pay note |
+| 4 | 4 daily-report steps and 12 safety items | Yes | No change |
+| 5 | Worker trades for an HVAC filter | No | Jitendar sees all workers at the selected site |

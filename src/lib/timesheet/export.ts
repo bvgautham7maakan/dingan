@@ -3,6 +3,7 @@ import ExcelJS from "exceljs";
 import { readFileSync } from "fs";
 import path from "path";
 import type { Timesheet } from "./build";
+import { LEAVE_RULES } from "./rules";
 
 /**
  * Writes the timesheet in the same layout as "KEM Timesheet 26-Aug to 25-Sep 2026.xlsx":
@@ -88,7 +89,8 @@ export async function timesheetWorkbook(ts: Timesheet): Promise<Buffer> {
     ["OT hours @ 1.5 (Sunday / PH)", g.ot150, "All hours worked on Sun/PH, lunch deducted"],
     ["Annual leave days", g.alDays, ""],
     ["Sick leave days", g.sickDays, ""],
-    ["Other leave days (CL/LV/A)", g.otherLeaveDays, ""],
+    ["Other leave days (CL/LV/A)", g.otherLeaveDays, "Unpaid – deduct Basic ÷ 30 per day"],
+    ["Paid leave days (AL/SL)", g.paidLeaveDays, "Paid – annual and sick / medical leave"],
     ["Total OT amount (AED)", "", "Fills in once basic salaries are entered"],
     ["Total gross (AED)", "", "Basic + OT"],
     ["Days not yet entered", notEntered, "Blank status rows (placeholder employees excluded)"],
@@ -132,6 +134,15 @@ export async function timesheetWorkbook(ts: Timesheet): Promise<Buffer> {
     r.values = [asDate(h.date), h.name];
     r.getCell(1).numFmt = "dd-mmm-yyyy";
   });
+  // leave pay rules (confirmed by KEM)
+  const lr = 18 + Math.max(ts.holidays.length, 10);
+  st.getCell(`A${lr}`).value = "Leave codes";
+  st.getCell(`A${lr}`).font = { ...FONT, bold: true };
+  header(st, lr + 1, ["Code", "Meaning", "Paid"]);
+  LEAVE_RULES.forEach((r, i) => {
+    st.getRow(lr + 2 + i).values = [r.code, r.meaning, r.paid === null ? "n/a" : r.paid ? "Yes" : "No"];
+  });
+  band(st, lr + 2, lr + 1 + LEAVE_RULES.length, 3);
   st.columns = [{ width: 42 }, { width: 14 }, { width: 44 }];
 
   // ── Employees ──
@@ -206,7 +217,7 @@ export async function timesheetWorkbook(ts: Timesheet): Promise<Buffer> {
   const present = tsh.getRow(lastW + 2);
   present.values = ["Present", "", ...ts.days.map((_, j) => ts.workers.filter((w) => typeof w.cells[j] === "number").length)];
   present.font = { ...FONT, italic: true };
-  tsh.getCell(`A${lastW + 4}`).value = "Gross = Basic + OT. No deduction applied for leave or partial month. Cyan bold cell = worked > 8 hrs.";
+  tsh.getCell(`A${lastW + 4}`).value = "Gross = Basic + OT − unpaid days (CL / LV / A, see 'Other leave days') × Basic ÷ 30. AL and SL are paid. Cyan bold cell = worked > 8 hrs.";
   tsh.columns = [{ width: 7 }, { width: 22 }, ...ts.days.map(() => ({ width: 5 })), ...Array(13).fill({ width: 10 })];
   tsh.views = [{ state: "frozen", xSplit: 2, ySplit: 5 }];
 

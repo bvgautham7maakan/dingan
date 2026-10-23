@@ -31,7 +31,6 @@ const shot = (p, name) => p.screenshot({ path: `${out}/${name}.png` });
   await p.goto(base + "/m/attendance"); await p.waitForSelector(".att-row"); await shot(p, "m-attendance");
   await p.goto(base + "/m/moves"); await p.waitForSelector("text=Move workers");
   await p.getByRole("button", { name: /Emergency/ }).click(); await shot(p, "m-move");
-  await p.goto(base + "/m/daily-report"); await p.waitForSelector("text=1. Manpower"); await shot(p, "m-report");
   await p.goto(base + "/m/material-requests"); await p.waitForSelector("text=Pick materials");
   await p.getByRole("button", { name: "HVAC", exact: true }).click();
   await p.getByRole("button", { name: /DUCT INSULATION/ }).first().click();
@@ -39,6 +38,11 @@ const shot = (p, name) => p.screenshot({ path: `${out}/${name}.png` });
   await p.goto(base + "/m/drawings"); await p.getByRole("link", { name: "NBK-SHD-HVAC-005" }).click();
   await p.waitForSelector("canvas"); await p.waitForTimeout(1200); await shot(p, "m-drawing");
   await p.goto(base + "/m/safety"); await p.waitForSelector("text=Mark all remaining OK"); await shot(p, "m-safety");
+  await c.close();
+}
+{ // a supervisor who has not sent today's report yet
+  const { c, p } = await as("vishnu", phone);
+  await p.goto(base + "/m/daily-report"); await p.waitForSelector("text=1. Manpower"); await shot(p, "m-report");
   await c.close();
 }
 {
