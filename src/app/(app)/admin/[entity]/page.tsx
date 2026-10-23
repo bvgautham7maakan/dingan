@@ -81,7 +81,7 @@ export default async function MasterPage({
       {sp.saved && <p className="notice notice-ok" role="status">✓ {tc("saved")}</p>}
       {sp.error && <p className="notice notice-error" role="alert">{sp.error}</p>}
 
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem">
           <thead>
             <tr>

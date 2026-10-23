@@ -39,7 +39,7 @@ export default async function MaterialRequestsPage() {
           <MRForm />
         </details>
       )}
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem">
           <thead>
             <tr>

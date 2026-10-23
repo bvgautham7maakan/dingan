@@ -173,12 +173,15 @@ async function main() {
   for (const [key, value] of settings)
     await db.setting.upsert({ where: { key }, update: {}, create: { key, value: value as never } });
 
-  await seedDemoAttendance(ids["renjith"], ids["sanu"]);
-  await seedDemoLogistics(ids);
-  await seedDemoSite(ids);
   await seedMaterials();
-  await seedDemoMaterials(ids);
-  await seedDemoDrawings(ids);
+  // demo transactions (plans, attendance, trips, requests, drawings…) – set SEED_DEMO=false to go live without them
+  if (process.env.SEED_DEMO !== "false") {
+    await seedDemoAttendance(ids["renjith"], ids["sanu"]);
+    await seedDemoLogistics(ids);
+    await seedDemoSite(ids);
+    await seedDemoMaterials(ids);
+    await seedDemoDrawings(ids);
+  }
 
   console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, ${emps.length} workers.`);
 }

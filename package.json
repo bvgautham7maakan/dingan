@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "node scripts/copy-pdf-worker.mjs && prisma generate && next build",
-    "start": "next start -p 3000",
+    "start": "next start -H 127.0.0.1",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -15,7 +15,8 @@
     "db:deploy": "prisma migrate deploy",
     "seed": "tsx prisma/seed.ts",
     "reset-demo": "node scripts/reset-demo.mjs",
-    "postinstall": "prisma generate && next telemetry disable && node scripts/copy-pdf-worker.mjs"
+    "postinstall": "prisma generate && next telemetry disable && node scripts/copy-pdf-worker.mjs",
+    "backup": "node scripts/backup.mjs --verify"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -35,6 +36,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/eslintrc": "^3.3.7",
     "@playwright/test": "1.56",
     "@types/node": "^22.20.5",

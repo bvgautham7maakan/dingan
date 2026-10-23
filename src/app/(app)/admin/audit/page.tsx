@@ -11,7 +11,7 @@ export default async function AuditPage() {
     <>
       <h1>{t("auditTitle")}</h1>
       <p className="caption">Latest 300 entries.</p>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem">
           <thead>
             <tr>

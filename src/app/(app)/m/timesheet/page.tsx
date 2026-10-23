@@ -48,7 +48,7 @@ export default async function TimesheetPage({ searchParams }: { searchParams: Pr
       </div>
       <p className="caption">{t("legend")}</p>
 
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem ts-grid">
           <thead>
             <tr>

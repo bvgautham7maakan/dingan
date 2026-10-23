@@ -16,7 +16,7 @@ export default async function DeviceList({
   const tc = await getTranslations("common");
   if (sessions.length === 0) return <p className="muted">{tc("none")}</p>;
   return (
-    <div className="table-wrap">
+    <div className="table-wrap" tabIndex={0}>
       <table className="kem">
         <thead>
           <tr>

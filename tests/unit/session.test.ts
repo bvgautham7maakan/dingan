@@ -86,3 +86,13 @@ describe("login rate limit", () => {
     expect(await isLoginBlocked("vishnu", "2.2.2.2")).toBe(false);
   });
 });
+
+describe("login rate limit behind a proxy", () => {
+  it("does not lock everyone out when every request looks local", async () => {
+    await db.loginAttempt.deleteMany();
+    for (let i = 0; i < 25; i++) await recordLoginAttempt(`attacker${i}`, "local", false);
+    expect(await isLoginBlocked("sanu", "local")).toBe(false);
+    for (let i = 0; i < 5; i++) await recordLoginAttempt("sanu", "local", false);
+    expect(await isLoginBlocked("sanu", "local")).toBe(true);
+  });
+});

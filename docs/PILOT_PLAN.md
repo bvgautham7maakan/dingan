@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M7 built** – awaiting sign-off before M8.
+Status: **M8 built – pilot complete**, awaiting sign-off.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -259,3 +259,16 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Notifications | In-app only: bell with unread count on every screen, list page, opening one marks it read; "mark all read" | Brief scope 12 (no third-party push) |
 | Project page | Man-days used vs budget (moved workers by share of the day), today, moves, reports, open requests, FC drawings | Brief 7.3 / MOCKUP p27 |
 | Man-day budget | Entered in Admin › Projects; demo: NBK 2,400, Safe Tower 1,800, Mangrove 900 | Brief 7.3 |
+
+## 12. Decisions taken during M8
+
+| Item | Decision | Why |
+|---|---|---|
+| Windows service | Task Scheduler (built in): start at boot, restart loop + task restart on failure, runs as the user with S4U (no stored password) | No third-party download (NSSM not needed) |
+| Server binding | `next start -H 127.0.0.1`; outside access only through Tailscale | Port 3000 never exposed on the LAN/internet |
+| Backup | `VACUUM INTO` copy while running + incremental uploads; 14 daily + 12 monthly; verified by opening the copy | Brief section 9 |
+| Login limit behind a proxy | Per-username limit always; per-address limit only when the client address is known | Prevents one attacker locking everyone out through Funnel |
+| CSP | Same-origin only; `'unsafe-inline'` for scripts (Next.js hydration) and styles | No third parties; nonces add complexity for little gain here |
+| Go-live | `SEED_DEMO=false` + `npm run reset-demo` gives master data only | Clean start after the demo |
+| PWA check | Chrome installability API instead of Lighthouse (PWA audit removed in Lighthouse 12) | Acceptance 11 |
+| Accessibility | axe WCAG 2 A/AA, no serious/critical issues on 11 key screens; scrollable tables keyboard-focusable | Brief section 9 |

@@ -205,7 +205,7 @@ table.kem tbody tr:nth-child(even) td { background: var(--alt-row); }
   min-height: var(--tap); min-width: var(--tap); padding: 0 14px; font-size: 16px; font-family: var(--font);
   border: 2px solid var(--divider); border-radius: 30px; background: var(--white); color: var(--body); cursor: pointer;
 }
-.chip[aria-pressed="true"] { border-color: var(--black); background: var(--cyan); color: var(--black); font-weight: bold; }
+.chip[aria-pressed="true"], .chip[aria-current="true"] { border-color: var(--black); background: var(--cyan); color: var(--black); font-weight: bold; }
 .chip-time { min-height: var(--tap); font-size: 18px; padding: 0 10px; border: 2px solid var(--divider); border-radius: var(--radius); font-family: var(--font); }
 
 /* ── Attendance ────────────────────────── */

@@ -63,11 +63,11 @@ export default async function MaterialMasterPage({
     return (
       <>
         <p className="row">
-          <Link className="chip" href={q({ disc: "" })} aria-pressed={!disc}>{t("all")}</Link>
-          {DISC.map((d) => <Link key={d} className="chip" href={q({ disc: d })} aria-pressed={disc === d}>{d}</Link>)}
+          <Link className="chip" href={q({ disc: "" })} aria-current={!disc}>{t("all")}</Link>
+          {DISC.map((d) => <Link key={d} className="chip" href={q({ disc: d })} aria-current={disc === d}>{d}</Link>)}
         </p>
         <p className="caption">{t("msHint", { approved: rows.filter((r) => r.status.startsWith("APPROVED")).length, total: rows.length })}</p>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="kem">
             <thead><tr><th>{t("material")}</th><th>{t("disc")}</th><th>{t("brand")}</th><th>MS</th><th>Rev</th><th>{t("status")}</th><th>{t("spec")}</th></tr></thead>
             <tbody>
@@ -141,7 +141,7 @@ export default async function MaterialMasterPage({
     const req = new Map(requested.map((r) => [r.materialId, r._sum.qty ?? 0]));
     return (
       <>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="kem">
             <thead>
               <tr>

@@ -37,7 +37,7 @@ export default async function SafetyPage() {
               </span>
             ))}
           </p>
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="kem">
               <thead><tr><th>{t("date")}</th><th>{t("project")}</th><th>{t("by")}</th><th>{t("issues")}</th><th>{t("photo")}</th></tr></thead>
               <tbody>

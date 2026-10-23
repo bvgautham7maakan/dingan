@@ -73,7 +73,7 @@ export default async function MRDetail({ params, searchParams }: { params: Promi
       <form action={approveMR}>
         <input type="hidden" name="id" value={r.id} />
         {flow && <input type="hidden" name="flowId" value={flow.id} />}
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table className="kem">
             <thead>
               <tr>

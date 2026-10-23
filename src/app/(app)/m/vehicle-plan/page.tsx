@@ -81,7 +81,7 @@ export default async function VehiclePlanPage({
         </form>
       )}
 
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem">
           <thead>
             <tr>

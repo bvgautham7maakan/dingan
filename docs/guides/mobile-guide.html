@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KEM Site – Phone guide</title>
+<style>
+  @page { size: A4; margin: 10mm; }
+  :root { --cyan: #00B4F0; --body: #1A1A1A; --muted: #555; --div: #E0E0E0; --alt: #F0FAFF; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: var(--body); margin: 0; font-size: 9.5pt; }
+  header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--cyan); padding-bottom: 6px; }
+  header img { width: 46mm; }
+  h1 { font-size: 15pt; margin: 0; color: var(--cyan); }
+  .sub { color: var(--muted); font-size: 9pt; text-align: right; }
+  .start { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0; }
+  .start div { background: var(--alt); border-radius: 4px; padding: 6px 7px; }
+  .start div > b:first-child { display: block; color: #000; }
+  .start b { color: #000; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .tile { border: 1px solid var(--div); border-top: 3px solid var(--cyan); border-radius: 4px; padding: 5px; }
+  .tile img { width: 100%; height: 58mm; object-fit: cover; object-position: top; border: 1px solid var(--div); border-radius: 3px; display: block; }
+  .tile h2 { font-size: 10pt; margin: 5px 0 2px; color: #000; }
+  .tile h2 span { display: inline-block; background: #000; color: #fff; border-radius: 50%; width: 16px; height: 16px; text-align: center; line-height: 16px; font-size: 8pt; margin-right: 4px; }
+  .tile p { margin: 0; line-height: 1.3; }
+  .tips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin-top: 8px; border-top: 1px solid var(--div); padding-top: 6px; }
+  .tips p { margin: 0; }
+  .tips b { color: #000; }
+  footer { margin-top: 6px; border-top: 1px solid var(--div); padding-top: 4px; font-size: 7.5pt; color: #888; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <img src="img/logo.png" alt="KEM">
+  <div>
+    <h1>KEM Site – phone guide</h1>
+    <div class="sub">Site supervisors · Head supervisor · Driver</div>
+  </div>
+</header>
+
+<section class="start">
+  <div><b>1. Open</b>Open the app link in Chrome → ⋮ → <i>Add to Home screen</i>.</div>
+  <div><b>2. Sign in once</b>Username + password. You stay signed in until you log out.</div>
+  <div><b>3. Language</b>Tap <b>EN</b> / <b>മ</b> / <b>हि</b> at the top of any screen.</div>
+  <div><b>4. No signal?</b>Keep working. The bar shows <b>● Saved on phone · N waiting</b>; it sends by itself.</div>
+</section>
+
+<section class="grid">
+  <div class="tile"><img src="img/m-home.png" alt="Home screen"><h2><span>1</span>Home</h2><p>What is waiting for you: overdue first, then today. Big buttons for every job.</p></div>
+  <div class="tile"><img src="img/m-attendance.png" alt="Attendance"><h2><span>2</span>Attendance</h2><p>List comes from Renjith's plan. Tap <b>IN</b>, <b>LATE</b> (+15 / +30 / time) or <b>OUT</b> (AL, SL, CL, A, OFF). <i>Mark all remaining IN</i>. End of day: finish time.</p></div>
+  <div class="tile"><img src="img/m-move.png" alt="Move workers"><h2><span>3</span>Move workers</h2><p>Pick workers → site → reason → time. <b>Emergency</b> moves at once; others wait for Renjith. Book a vehicle in the same step.</p></div>
+  <div class="tile"><img src="img/m-report.png" alt="Daily report"><h2><span>4</span>Daily report</h2><p>4 steps: manpower · work done + photos · issues & materials · tomorrow. Renjith checks, then the SE.</p></div>
+  <div class="tile"><img src="img/m-material.png" alt="Material request"><h2><span>5</span>Material request</h2><p>Pick material, enter <b>quantity + unit</b>. Brand fills in from the approved MS. No prices.</p></div>
+  <div class="tile"><img src="img/m-safety.png" alt="Safety checklist"><h2><span>6</span>Safety check</h2><p><i>Mark all remaining OK</i>, change any problem to <b>Issue</b> with a note and a photo.</p></div>
+  <div class="tile"><img src="img/m-drawing.png" alt="Drawing"><h2><span>7</span>Drawings</h2><p>Only "For construction". <b>+ / −</b> to zoom. <b>Calibrate</b> on a known dimension, then <b>Measure</b>. <i>Save offline</i> before going to site.</p></div>
+  <div class="tile"><img src="img/m-driver.png" alt="Driver home"><h2><span>8</span>Driver</h2><p>Vehicle check (photo) first. Trip: <b>Start → Delivered</b> (photo) <b>→ Back at base</b>. Map button. Fuel / Salik / fine bill with photo.</p></div>
+</section>
+
+<section class="tips">
+  <p><b>Duties</b> – Renjith's tasks have a deadline. Tap <i>Mark done</i> and add a photo.</p>
+  <p><b>Ask design</b> – Site queries: subject, question, photos. You get a notification when Alwin answers.</p>
+  <p><b>🔔</b> – New approvals, answers and duties. Tap one to open it.</p>
+  <p><b>Problems?</b> – Tell Dinga (PE / Admin). Never share your password; Admin can sign out a lost phone.</p>
+</section>
+
+<footer>Kahraba Electromechanical Services LLC · Musaffah, Abu Dhabi, UAE · +971 2 546 9810 · info@kahrabaelectromechanical.com</footer>
+</body>
+</html>

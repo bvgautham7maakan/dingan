@@ -24,7 +24,7 @@ export default async function Users() {
   return (
     <>
       <h1>{t("usersTitle")}</h1>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem">
           <thead>
             <tr>

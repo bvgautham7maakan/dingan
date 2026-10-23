@@ -6,27 +6,37 @@ Plan, schema and milestones: [`docs/PILOT_PLAN.md`](docs/PILOT_PLAN.md).
 
 ## Run on the ZBook (Windows)
 
+Full steps: [`docs/DEPLOY_WINDOWS.md`](docs/DEPLOY_WINDOWS.md). In short:
+
 | Step | Command |
 |---|---|
-| 1. Install Node.js 22 LTS | from nodejs.org |
-| 2. Get the code | `git clone https://github.com/bvgautham7maakan/dingan.git C:\KEM-App` then `cd C:\KEM-App` |
-| 3. Settings | `copy .env.example .env` (edit `SEED_TEMP_PASSWORD`) |
-| 4. Install | `npm install` |
-| 5. Database | `npx prisma migrate deploy` then `npm run seed` |
-| 6. Start (dev) | `npm run dev` → http://localhost:3000 |
-| 6. Start (prod) | `npm run build` then `npm start` |
+| 1. Install Node.js 22 LTS + Git | nodejs.org · git-scm.com |
+| 2. Get the code | `git clone https://github.com/bvgautham7maakan/dingan.git C:\KEM-App` |
+| 3. Set up (run twice: first creates `.env`) | `powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1` |
+| 4. Service + nightly backup (Administrator) | `powershell -ExecutionPolicy Bypass -File scripts\windows\install-service.ps1` |
+| 5. Remote access | [`docs/TAILSCALE_FUNNEL.md`](docs/TAILSCALE_FUNNEL.md) |
 
-Windows service, nightly backup and Tailscale Funnel guide arrive in M8.
+## Guides
+
+| Who | File |
+|---|---|
+| Office team (English) | [`docs/guides/KEM-Site-Office-Guide.pdf`](docs/guides/KEM-Site-Office-Guide.pdf) |
+| Site team – one page with pictures | [`docs/guides/KEM-Site-Phone-Guide.pdf`](docs/guides/KEM-Site-Phone-Guide.pdf) |
+| Acceptance tests status | [`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md) |
 
 ## Scripts
 
 | Script | Does |
 |---|---|
-| `npm run seed` | Adds users, sites, projects, vehicles, workers, holidays (safe to re-run) |
-| `npm run reset-demo` | Deletes the demo DB and rebuilds it (asks you to type RESET) |
+| `npm run dev` | Development server (http://localhost:3000) |
+| `npm run build` / `npm start` | Production build / server (127.0.0.1:3000) |
+| `npm run seed` | Users, sites, projects, workers, materials, holidays (+ demo data unless `SEED_DEMO=false`) |
+| `npm run reset-demo` | Deletes the database and rebuilds it (asks you to type RESET) |
+| `npm run backup` | Database + uploads to `BACKUP_DIR` (nightly via the scheduled task) |
 | `npm test` | Unit tests (Vitest) |
 | `npm run test:e2e` | Browser tests at 390 px and 1440 px (run `npm run build` first) |
 | `npm run lint` / `npm run typecheck` | Code checks |
+| `node scripts/guide-screens.mjs` + `node scripts/guide-pdf.mjs` | Re-capture guide screenshots and rebuild the PDF guides |
 
 ## Seeded users
 

@@ -26,7 +26,7 @@ export default async function BillsPage({ searchParams }: { searchParams: Promis
       {office && (
         <>
           {sp.saved && <p className="notice notice-ok" role="status">✓ {t("checked")}</p>}
-          <div className="table-wrap">
+          <div className="table-wrap" tabIndex={0}>
             <table className="kem">
               <thead>
                 <tr>

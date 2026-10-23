@@ -33,7 +33,7 @@ export default async function DailyReportPage({ searchParams }: { searchParams: 
       <h1>{tn("dailyReport")}</h1>
       {writer && <ReportWizard date={todayDubai()} initialProject={sp.project} />}
       {hasAnyRole(me.roles, REPORT_WRITE_ROLES) && writer && <h2>{t("myReports")}</h2>}
-      <div className="table-wrap" style={{ marginTop: 12 }}>
+      <div className="table-wrap" tabIndex={0} style={{ marginTop: 12 }}>
         <table className="kem">
           <thead>
             <tr><th>{t("date")}</th><th>{t("project")}</th><th>{t("by")}</th><th>{t("status")}</th><th>{t("waitingFor")}</th></tr>

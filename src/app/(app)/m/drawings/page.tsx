@@ -27,10 +27,10 @@ export default async function DrawingsPage({ searchParams }: { searchParams: Pro
       {site && <p className="caption">{t("fcOnlyHint")}</p>}
       {sp.released && <p className="notice notice-ok" role="status">✓ {t("released")}</p>}
       <p className="row">
-        <Link className="chip" href="/m/drawings" aria-pressed={!projectId}>{t("all")}</Link>
-        {projects.map((p) => <Link key={p.id} className="chip" href={`/m/drawings?project=${p.id}`} aria-pressed={projectId === p.id}>{p.code}</Link>)}
+        <Link className="chip" href="/m/drawings" aria-current={!projectId}>{t("all")}</Link>
+        {projects.map((p) => <Link key={p.id} className="chip" href={`/m/drawings?project=${p.id}`} aria-current={projectId === p.id}>{p.code}</Link>)}
       </p>
-      <div className="table-wrap">
+      <div className="table-wrap" tabIndex={0}>
         <table className="kem">
           <thead>
             <tr><th>{t("ref")}</th><th>{t("titleField")}</th><th>{t("discipline")}</th><th>{t("revisions")}</th><th>{t("actions")}</th></tr>
