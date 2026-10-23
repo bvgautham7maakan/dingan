@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KEM Site – Office user guide</title>
+<style>
+  @page { size: A4; margin: 14mm 14mm 20mm; }
+  :root { --cyan: #00B4F0; --body: #1A1A1A; --muted: #555; --div: #E0E0E0; --alt: #F0FAFF; }
+  body { font-family: Arial, Helvetica, sans-serif; color: var(--body); font-size: 10.5pt; line-height: 1.45; margin: 0; }
+  header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--cyan); padding-bottom: 8px; margin-bottom: 10px; }
+  header img { width: 52mm; }
+  .meta { text-align: right; color: var(--muted); font-size: 9pt; }
+  h1 { color: var(--cyan); font-size: 18pt; margin: 0 0 4px; }
+  h2 { color: var(--cyan); font-size: 14pt; margin: 18px 0 6px; break-after: avoid; }
+  h3 { color: #000; font-size: 11.5pt; margin: 12px 0 4px; break-after: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 9.5pt; break-inside: avoid; }
+  th { background: var(--cyan); color: #000; text-align: left; padding: 5px 7px; }
+  td { border-top: 1px solid var(--div); padding: 5px 7px; vertical-align: top; }
+  tr:nth-child(even) td { background: var(--alt); }
+  img.shot { width: 100%; border: 1px solid var(--div); border-radius: 4px; margin: 4px 0 10px; break-inside: avoid; }
+  figure { margin: 0; break-inside: avoid; }
+  figcaption { font-size: 8.5pt; color: #888; font-style: italic; margin-top: -6px; margin-bottom: 10px; }
+  ol, ul { margin: 4px 0 8px 18px; padding: 0; }
+  .note { background: var(--alt); border-left: 5px solid var(--cyan); padding: 6px 10px; margin: 8px 0; }
+  .page { break-before: page; }
+</style>
+</head>
+<body>
+<header>
+  <img src="img/logo.png" alt="KEM">
+  <div class="meta">Office user guide · pilot (NBK)<br>Version 1.0</div>
+</header>
+
+<h1>KEM Site – Office user guide</h1>
+<p>For the office team on desktop or laptop: PE, SE, PM, Operations, BUL, Estimator, Design, Coordinator, Procurement and Admin. The site team uses the phone guide.</p>
+
+<h2>1. Sign in and stay signed in</h2>
+<ol>
+  <li>Open the KEM Site link (Chrome or Edge). Enter your username and password.</li>
+  <li>The first time, set your own password (at least 8 characters, letters and numbers).</li>
+  <li>You stay signed in on that computer for 90 days of use. Use <b>Log out</b> (bottom of the left menu) on shared computers.</li>
+  <li>Change the language at the top right: <b>EN</b> / <b>മ</b> / <b>हि</b>.</li>
+</ol>
+
+<h2>2. Your dashboard</h2>
+<figure><img class="shot" src="img/d-dashboard.png" alt="PE dashboard"><figcaption>Dashboard of the Project Engineer: HIGH-ALERT at the top, waiting list, today's cards, projects on the right.</figcaption></figure>
+<table>
+  <tr><th>Part</th><th>What it shows</th></tr>
+  <tr><td>HIGH-ALERT (SE and PE only)</td><td>Material requested with a brand not in an approved MS, or more than the BOQ quantity. Open the request and mark each alert checked with a note.</td></tr>
+  <tr><td>Waiting for you</td><td>Only the actions that are yours: <b>Overdue</b> (red) → <b>Today</b> → <b>This week</b>. Approvals are due within 24 hours.</td></tr>
+  <tr><td>Since your last visit</td><td>New notifications, requests, moves, reports, query answers and drawing releases.</td></tr>
+  <tr><td>Today</td><td>Cards for your role (site board, clashes, man-days vs budget, request pipeline, critical alerts…). Click a card to drill down.</td></tr>
+  <tr><td>Coming later</td><td>Modules planned for phase 2/3 (CCR, IPA, estimation, schedule…).</td></tr>
+  <tr><td>My projects / All projects</td><td>Switch at the right. Click a project for man-days, moves, reports and open requests.</td></tr>
+  <tr><td>🔔 bell</td><td>Notifications. Opening one marks it read.</td></tr>
+</table>
+<div class="note">AED values are never shown to supervisors, the head supervisor, the driver or Design – on screen or in the data the app sends to their phones.</div>
+
+<h2 class="page">3. Approvals – how every chain works</h2>
+<ul>
+  <li>Each item shows its chain as a step bar: <b>✓ done</b> · <b>● waiting</b> · <b>○ later</b> · <b>↩ returned</b> · <b>– skipped</b>.</li>
+  <li>You only get buttons on <b>your</b> step. You can never approve an item you raised yourself.</li>
+  <li><b>Return</b> needs a comment and sends the item one step back (from the first step, back to the person who raised it).</li>
+</ul>
+<table>
+  <tr><th>Item</th><th>Chain</th></tr>
+  <tr><td>Material request</td><td>SE or PE → Estimator (rates) → PM (Yadhu S) on his projects, otherwise Operations (Yadhu V) → BUL (Nobin) only above AED 100,000 → Procurement (LPO number = ordered)</td></tr>
+  <tr><td>Manpower move</td><td>Supervisor → Head supervisor. Emergency moves apply at once and are approved afterwards; a returned emergency move is undone.</td></tr>
+  <tr><td>Vehicle plan</td><td>Supervisors add trips → Head supervisor approves. PM sees it read-only.</td></tr>
+  <tr><td>Daily report</td><td>Supervisor → Head supervisor check → Site engineer check</td></tr>
+  <tr><td>Site query</td><td>Supervisor → Design answers → supervisor notified</td></tr>
+  <tr><td>Drawing</td><td>Design releases a revision "For construction" – only those reach site.</td></tr>
+</table>
+
+<h2>4. Material requests</h2>
+<figure><img class="shot" src="img/d-mr.png" alt="Material request"><figcaption>A request at the SE / PE step with its HIGH-ALERTs and the full chain.</figcaption></figure>
+<ol>
+  <li><b>SE / PE</b>: open the request from the dashboard, read any HIGH-ALERT, approve or return.</li>
+  <li><b>Estimator</b>: enter a rate (AED per unit) for every item – pre-filled from the BOQ where set – then <i>Approve</i>. The total decides whether BUL is needed.</li>
+  <li><b>PM / Operations / BUL</b>: check and approve. Below the threshold the BUL step shows "skipped".</li>
+  <li><b>Procurement</b>: enter the LPO number and click <i>Mark ordered</i>.</li>
+</ol>
+<h3>Materials & MS brands, BOQ</h3>
+<figure><img class="shot" src="img/d-boq.png" alt="BOQ"><figcaption>BOQ per project: requested so far and remaining; edit a line or import Excel.</figcaption></figure>
+<ul>
+  <li><b>MS log</b>: one line per material + brand per project. Keep the status current – only <b>Approved</b> / <b>Approved with comments</b> brands fill in automatically on site; anything else raises HIGH-ALERT.</li>
+  <li><b>BOQ import</b>: Excel, first sheet, a header row with <i>Material</i> and <i>Qty</i> (optional <i>Discipline</i>, <i>Unit</i>, <i>Rate</i>). Unknown materials are added.</li>
+</ul>
+
+<h2 class="page">5. Manpower, attendance and timesheet</h2>
+<ul>
+  <li><b>Day plan</b> (Renjith, SE, PE, PM): which worker goes to which site, by which vehicle and shift. Supervisors' attendance lists start from it.</li>
+  <li><b>Attendance</b> is marked on the phones. A worker moved during the day has his hours split by the time spent at each site.</li>
+  <li><b>Site start time</b> can be changed by SUP, PM, SE and the head supervisor; every change is logged.</li>
+</ul>
+<figure><img class="shot" src="img/d-timesheet.png" alt="Timesheet"><figcaption>Timesheet for the 26th–25th cycle; Download Excel gives the KEM workbook layout.</figcaption></figure>
+<table>
+  <tr><th>Rule</th><th>How it is counted (same as the KEM workbook)</th></tr>
+  <tr><td>Mon–Sat</td><td>8 normal paid hours; lunch 1 h deducted only if the shift is longer than 5 h</td></tr>
+  <tr><td>Overtime ×1.25</td><td>Hours beyond a 9-hour shift on normal days</td></tr>
+  <tr><td>Sunday / public holiday</td><td>All worked hours ×1.5 (lunch rule applies)</td></tr>
+  <tr><td>Night shift 23:00–07:00</td><td>Full 8-hour day, no OT</td></tr>
+  <tr><td>Night 20:00–08:00</td><td>8 normal + 3 h OT ×1.25</td></tr>
+  <tr><td>Leave</td><td><b>Paid</b>: AL annual, SL sick / medical. <b>Unpaid</b>: CL casual, A absent, LV (type to be confirmed) – shown as "Unpaid days" / "Other leave days"</td></tr>
+  <tr><td>No finish time</td><td>Standard 9-hour shift assumed, marked * – ask the supervisor to set the time</td></tr>
+</table>
+<p>Public holidays: Admin › Public holidays. Excel sheets: Summary, Settings, Employees, Daily Log, Timesheet and Site hours.</p>
+
+<h2>6. Logistics</h2>
+<figure><img class="shot" src="img/d-vehicle.png" alt="Vehicle plan"><figcaption>Vehicle plan with the red clash banner: the same vehicle or driver booked twice.</figcaption></figure>
+<ul>
+  <li><b>Today / Plan tomorrow</b> tabs. Add trips (vehicle, driver, from → to, times, purpose, passengers, materials).</li>
+  <li>Supervisors send the plan to Renjith; any later change by them sends it back to draft.</li>
+  <li><b>Driver bills</b>: Ali enters the amount; supervisors' bills have no amount – the office enters it from the photo and clicks <i>Check</i>.</li>
+</ul>
+
+<h2 class="page">7. Drawings and site queries</h2>
+<figure><img class="shot" src="img/d-drawings.png" alt="Drawing register"><figcaption>Drawing register: revisions, status and "For construction".</figcaption></figure>
+<ol>
+  <li><b>Upload</b> (Design, Coordinator, PE, Admin): new drawing (ref is created, e.g. NBK-SHD-HVAC-005) or new revision; PDF up to 60 MB.</li>
+  <li><b>Release for construction</b> (Design only): the previous FC revision is superseded; site is notified.</li>
+  <li><b>Viewer</b>: + / − / Fit, <i>Calibrate</i> on a known dimension, then <i>Measure</i> or <i>Chain</i>; measurements are saved with the drawing.</li>
+</ol>
+<figure><img class="shot" src="img/d-query.png" alt="Site query"><figcaption>Design answers a site query; the supervisor gets a notification.</figcaption></figure>
+
+<h2 class="page">8. Admin (Dinga) and PM</h2>
+<figure><img class="shot" src="img/d-user.png" alt="User page"><figcaption>User page: signed-in devices, sign out all devices, roles, reset password, deactivate.</figcaption></figure>
+<table>
+  <tr><th>Task</th><th>Where</th></tr>
+  <tr><td>New user (temporary password shown once)</td><td>Admin › Users › New user</td></tr>
+  <tr><td>Lost phone – sign out all devices</td><td>Admin › Users › name › <i>Sign out all devices</i> (Admin and PM)</td></tr>
+  <tr><td>Someone leaves</td><td>Admin › Users › name › <i>Deactivate</i> (signs out everywhere)</td></tr>
+  <tr><td>Projects, PM, assigned staff, man-day budget, BUL threshold, OneDrive path</td><td>Admin › Projects</td></tr>
+  <tr><td>Sites (start time, map link), workers, vehicles, holidays</td><td>Admin › Sites / Workers / Vehicles / Public holidays</td></tr>
+  <tr><td>Who changed what</td><td>Admin › Audit log</td></tr>
+  <tr><td>Backup, restore, service, remote access</td><td>docs/DEPLOY_WINDOWS.md and docs/TAILSCALE_FUNNEL.md</td></tr>
+</table>
+<div class="note">Pilot scope: NBK. Estimation, CCR, IPA, subcontractor bills, accounts, SABR packs, price lists, DWG, take-off, schedule, HVAC T&C, authority approvals and the weekly PDF report are planned for phase 2/3.</div>
+</body>
+</html>

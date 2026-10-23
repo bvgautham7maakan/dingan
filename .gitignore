@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+data/
+prisma/*.db
+prisma/*.db-journal
+.env
+.env.local
+*.log
+next-env.d.ts
+tsconfig.tsbuildinfo
+public/pdf.worker.min.mjs
