@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { withUser, jsonFor } from "@/lib/api";
-import { mutationSchema } from "@/lib/attendance/types";
-import { applyMutation, MutationError } from "@/lib/attendance/server";
+import { mutationSchema } from "@/lib/sync/schema";
+import { applyMutation, MutationError } from "@/lib/sync/apply";
 
 const body = z.object({ mutations: z.array(z.unknown()).max(500) });
 

@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M2 built** – awaiting sign-off before M3.
+Status: **M3 built** – awaiting sign-off before M4.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -183,3 +183,22 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Excel header text | Black on cyan (same contrast rule as the screens) | Readability |
 | Salaries | Not stored; money columns in the export keep their headers, blank | Confidential, and out of pilot scope |
 | Mockup V4 | Screens are images – only captions extracted (`reference/mockup-v4-notes.md`) | Needs the PDF in the repo to check layouts |
+
+## 7. Decisions taken during M3
+
+| Item | Decision | Why |
+|---|---|---|
+| Approval engine | One generic engine (`src/lib/approvals.ts`) for every chain; moves and vehicle plan use it now, daily report / MR next | Same step bar, return-with-comment and notifications everywhere |
+| Return | Needs a comment; goes to the previous step, or back to the requester from step 1 | Brief section 6 |
+| Emergency move | Applies at once; if Renjith returns it, the hour split is undone | Brief 7.3 |
+| Normal move | Hours move only after Renjith approves (split still at the move time) | Brief section 6 |
+| Head supervisor's own moves | Apply at once, no approval step | He is the approver |
+| Hour split | In proportion to time at each site (incl. lunch), e.g. move at 12:00 on 08:00–17:00 → 3.56 h / 4.44 h | Lunch time is not known per site |
+| Vehicle booking with a move | Creates a trip on that day's vehicle plan (1 h slot, default driver) | Brief 7.3 "optional vehicle booking" |
+| Vehicle plan | Supervisors add trips and send to Renjith; any later edit by them sends it back to draft; PM view only | Brief section 6 |
+| Clash | Same vehicle or same driver with overlapping times → red banner + row marked "Clash". Approval is not blocked | Renjith decides; tell me if approval should be blocked |
+| Trip start | Blocked until that vehicle has a check today; "Delivered" needs a photo | Brief 7.4 |
+| Bills | Driver must enter an amount; supervisor form has none; office adds/corrects the amount and marks "Checked" | Brief 7.4 |
+| Uploads | Real file type checked from the bytes (JPEG/PNG/WebP, voice WebM/OGG/M4A/WAV), max 15 MB, photos shrunk on the phone to ≤1600 px | Security + storage |
+| OneDrive mirror | Off by default (`ONEDRIVE_MIRROR=true` to enable); writes only into the project's OneDrive path + "KEM App uploads" | "Never write into OneDrive except approved paths" |
+| Map link | Site's Google Maps link if set, else its GPS, else a search for "<site>, Abu Dhabi" | Site GPS not yet entered |

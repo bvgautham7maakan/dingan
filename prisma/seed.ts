@@ -167,6 +167,7 @@ async function main() {
     await db.setting.upsert({ where: { key }, update: {}, create: { key, value: value as never } });
 
   await seedDemoAttendance(ids["renjith"], ids["sanu"]);
+  await seedDemoLogistics(ids);
 
   console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, ${emps.length} workers.`);
 }
@@ -214,6 +215,60 @@ async function seedDemoAttendance(renjithId: string, sanuId: string) {
     if (!sick)
       await db.workSegment.create({ data: { attendanceId: rec.id, siteId: sites.NBK.id, projectId: projects.NBK.id, startAt: at(y, inT), endAt: at(y, outT) } });
   }
+}
+
+/** Demo: today's trips (Vehicle 3 double-booked) and yesterday's 10:15 emergency move awaiting Renjith. */
+async function seedDemoLogistics(ids: Record<string, string>) {
+  if ((await db.trip.count()) > 0) return;
+  const day = (offset: number) => new Date(Date.now() + 4 * 3_600_000 + offset * 86_400_000).toISOString().slice(0, 10);
+  const at = (d: string, hhmm: string) => {
+    const [y, m, dd] = d.split("-").map(Number);
+    const [h, min] = hhmm.split(":").map(Number);
+    return new Date(Date.UTC(y, m - 1, dd, h - 4, min));
+  };
+  const site = Object.fromEntries((await db.site.findMany()).map((s) => [s.code, s.id]));
+  const veh = Object.fromEntries((await db.vehicle.findMany()).map((v) => [v.name, v.id]));
+  const today = day(0);
+  const plan = await db.vehiclePlan.create({ data: { date: today, status: "DRAFT" } });
+  const trips: [string, string | null, string, string, string, string, string][] = [
+    ["Vehicle 1", ids["ali"], "STORE", "NBK", "07:00", "08:30", "Cable drums + 12 workers"],
+    ["Vehicle 1", ids["ali"], "STORE", "SAFE", "10:00", "11:30", "Duct material"],
+    ["Vehicle 2", ids["vishnu"], "OFFICE", "SAFE", "07:30", "08:15", "Crew drop"],
+    ["Vehicle 3", ids["aneesh"], "STORE", "MANG", "09:00", "11:00", "PPR pipes"],
+    ["Vehicle 3", ids["sanu"], "NBK", "SAFE", "10:15", "11:00", "Emergency crew"],
+  ];
+  for (const [v, driverId, from, to, out, back, purpose] of trips)
+    await db.trip.create({
+      data: { planId: plan.id, date: today, vehicleId: veh[v], driverId, fromSiteId: site[from], toSiteId: site[to], plannedOut: at(today, out), plannedReturn: at(today, back), purpose },
+    });
+
+  // yesterday's emergency move at 10:15 (only if the demo attendance exists)
+  const y = day(-1);
+  const workers = await db.worker.findMany({ where: { empCode: { in: ["E05", "E06", "E07"] } } });
+  const atts = await db.attendance.findMany({ where: { date: y, workerId: { in: workers.map((w) => w.id) } }, include: { segments: true } });
+  if (atts.length !== 3) return;
+  const moveAt = at(y, "10:15");
+  const project = await db.project.findUnique({ where: { code: "SAFE" } });
+  const move = await db.manpowerMove.create({
+    data: {
+      date: y, fromSiteId: site.NBK, toSiteId: site.SAFE, moveAt, reason: "EMERGENCY", note: "Ceiling closing today – client inspection",
+      status: "APPLIED", appliedAt: moveAt, createdById: ids["sanu"], workers: { create: workers.map((w) => ({ workerId: w.id })) },
+    },
+  });
+  for (const a of atts) {
+    const seg = a.segments[0];
+    await db.workSegment.update({ where: { id: seg.id }, data: { endAt: moveAt } });
+    await db.workSegment.create({ data: { attendanceId: a.id, siteId: site.SAFE, projectId: project?.id, startAt: moveAt, endAt: seg.endAt, source: "MOVE", moveId: move.id } });
+  }
+  await db.approvalFlow.create({
+    data: {
+      entityType: "MANPOWER_MOVE", entityId: move.id, chainCode: "MOVE", createdById: ids["sanu"],
+      steps: { create: [{ seq: 1, label: "Head supervisor", role: "HEAD_SUP", status: "PENDING" }] },
+    },
+  });
+  await db.notification.create({
+    data: { userId: ids["renjith"], type: "APPROVAL", title: "Move 3 worker(s) NBK → Safe Tower at 10:15 (Emergency) – waiting for you", link: "/m/moves", entityType: "MANPOWER_MOVE", entityId: move.id },
+  });
 }
 
 main()

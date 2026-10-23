@@ -32,7 +32,7 @@ export const NAV: NavGroup[] = [
       { key: "attendance", href: "/m/attendance", roles: ["SUP", "HEAD_SUP", "HVAC_SUP", "SE", "PE", "PM", "ADMIN"] },
       { key: "dayPlan", href: "/m/plan", roles: ["HEAD_SUP", "SE", "PE", "PM", "ADMIN"] },
       { key: "timesheet", href: "/m/timesheet", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "COORD", "HEAD_SUP"] },
-      { key: "moves", href: "/m/moves", roles: OFFICE_SITE, stage: "M3" },
+      { key: "moves", href: "/m/moves", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "ADMIN"] },
       { key: "duties", href: "/m/duties", roles: OFFICE_SITE, stage: "M4" },
       { key: "dailyReport", href: "/m/daily-report", roles: OFFICE_SITE, stage: "M4" },
       { key: "safety", href: "/m/safety", roles: OFFICE_SITE, stage: "M4" },
@@ -42,10 +42,10 @@ export const NAV: NavGroup[] = [
     key: "logistics",
     icon: "⛟",
     items: [
-      { key: "vehiclePlan", href: "/m/vehicle-plan", roles: [...OFFICE_SITE, "DRIVER"], stage: "M3" },
-      { key: "trips", href: "/m/trips", roles: [...OFFICE_SITE, "DRIVER"], stage: "M3" },
-      { key: "vehicleCheck", href: "/m/vehicle-check", roles: ["DRIVER", "HEAD_SUP", "ADMIN"], stage: "M3" },
-      { key: "bills", href: "/m/bills", roles: ["DRIVER", "ADMIN", "PE", "OPS", "BUL", "PM", "HEAD_SUP", "SUP", "HVAC_SUP"], stage: "M3" },
+      { key: "vehiclePlan", href: "/m/vehicle-plan", roles: [...OFFICE_SITE, "DRIVER"] },
+      { key: "trips", href: "/m/trips", roles: ["DRIVER", "SUP", "HVAC_SUP", "HEAD_SUP", "ADMIN"] },
+      { key: "vehicleCheck", href: "/m/vehicle-check", roles: ["DRIVER", "SUP", "HVAC_SUP", "HEAD_SUP", "ADMIN"] },
+      { key: "bills", href: "/m/bills", roles: ["DRIVER", "ADMIN", "PE", "OPS", "BUL", "PM", "HEAD_SUP", "SUP", "HVAC_SUP"] },
     ],
   },
   {

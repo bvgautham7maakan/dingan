@@ -122,5 +122,51 @@
   "ts": {
     "title": "टाइमशीट",
     "export": "Excel डाउनलोड"
+  },
+  "media": {
+    "takePhoto": "फ़ोटो लें",
+    "retake": "फिर से लें",
+    "photoRequired": "फ़ोटो ज़रूरी",
+    "voiceNote": "आवाज़ नोट",
+    "record": "आवाज़ रिकॉर्ड करें",
+    "stop": "रोकें",
+    "delete": "हटाएँ"
+  },
+  "moves": {
+    "from": "कहाँ से",
+    "newMove": "मज़दूर बदली",
+    "pickWorkers": "मज़दूर चुनें",
+    "to": "कहाँ",
+    "reason": "कारण",
+    "reason_EMERGENCY": "इमरजेंसी",
+    "reason_EXTRA": "ज़्यादा लोग",
+    "reason_MATERIAL": "सामान शिफ़्ट",
+    "reason_OTHER": "अन्य",
+    "time": "समय",
+    "note": "नोट",
+    "approve": "मंज़ूर",
+    "return": "वापस भेजें"
+  },
+  "drv": {
+    "checkFirst": "पहले गाड़ी जाँच",
+    "doCheck": "गाड़ी जाँच शुरू करें",
+    "today": "आज",
+    "tomorrow": "कल",
+    "start": "ट्रिप शुरू",
+    "delivered": "पहुँचा दिया",
+    "returned": "वापस आ गए",
+    "tyres": "टायर",
+    "oil": "तेल",
+    "lights": "लाइट",
+    "damage": "नुकसान (अगर है)"
+  },
+  "bill": {
+    "type": "बिल प्रकार",
+    "type_FUEL": "फ़्यूल",
+    "type_SALIK": "सालिक",
+    "type_FINE": "जुर्माना",
+    "odometer": "ओडोमीटर (km)",
+    "photo": "बिल फ़ोटो",
+    "save": "बिल सेव करें"
   }
 }

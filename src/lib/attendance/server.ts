@@ -4,7 +4,7 @@ import { audit } from "../audit";
 import { hasAnyRole, type Role } from "../roles";
 import { addDaysIso, dubaiDateTime, dubaiHHMM } from "../time";
 import type { CurrentUser } from "../auth/current";
-import type { AttendanceDay, DayRecord, LeaveCode, Mutation, Shift } from "./types";
+import type { AttendanceDay, AttendanceMutation, DayRecord, LeaveCode, Shift } from "./types";
 
 export const ATTENDANCE_ROLES: readonly Role[] = ["SUP", "HEAD_SUP", "HVAC_SUP", "SE", "PE", "PM", "ADMIN"];
 export const START_TIME_ROLES: readonly Role[] = ["SUP", "PM", "SE", "HEAD_SUP", "ADMIN"];
@@ -28,7 +28,7 @@ export async function getAttendanceDay(user: CurrentUser, siteId: string, date: 
     db.site.findUniqueOrThrow({ where: { id: siteId } }),
     db.site.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
     db.dayPlan.findUnique({ where: { date }, include: { lines: { include: { vehicle: true } } } }),
-    db.attendance.findMany({ where: { date } }),
+    db.attendance.findMany({ where: { date }, include: { segments: { orderBy: { startAt: "asc" } } } }),
     db.worker.findMany({ where: { status: "ACTIVE" }, orderBy: { empCode: "asc" } }),
   ]);
   const planBy = new Map(plan?.lines.map((l) => [l.workerId, l]) ?? []);
@@ -44,12 +44,16 @@ export async function getAttendanceDay(user: CurrentUser, siteId: string, date: 
     siteId: r.siteId,
   });
 
+  const siteName = new Map(sites.map((s) => [s.id, s.name]));
   const rows: AttendanceDay["rows"] = [];
   const others: AttendanceDay["others"] = [];
   for (const w of workers) {
     const line = planBy.get(w.id);
     const rec = recBy.get(w.id);
-    const here = rec ? rec.siteId === siteId : line?.siteId === siteId;
+    const moves = rec?.segments.filter((s) => s.source === "MOVE") ?? [];
+    const movedIn = moves.find((s) => s.siteId === siteId && rec?.siteId !== siteId);
+    const movedOut = rec?.siteId === siteId ? moves.find((s) => s.siteId !== siteId) : undefined;
+    const here = rec ? rec.siteId === siteId || !!movedIn : line?.siteId === siteId;
     const base = { workerId: w.id, empCode: w.empCode, name: w.name, trade: w.trade };
     if (here)
       rows.push({
@@ -58,6 +62,11 @@ export async function getAttendanceDay(user: CurrentUser, siteId: string, date: 
         vehicle: line?.vehicle?.name ?? null,
         plannedShift: (line?.shift as Shift) ?? null,
         record: rec ? toRecord(rec) : null,
+        moved: movedIn
+          ? `← ${siteName.get(rec!.siteId) ?? ""} ${dubaiHHMM(movedIn.startAt)}`
+          : movedOut
+            ? `→ ${siteName.get(movedOut.siteId) ?? ""} ${dubaiHHMM(movedOut.startAt)}`
+            : null,
       });
     else if (!rec) others.push(base);
   }
@@ -73,11 +82,8 @@ export async function getAttendanceDay(user: CurrentUser, siteId: string, date: 
   };
 }
 
-/** Applies one offline mutation. Idempotent per mutation id. */
-export async function applyMutation(user: CurrentUser, m: Mutation): Promise<"applied" | "duplicate"> {
-  const seen = await db.syncReceipt.findUnique({ where: { clientMutationId: m.id } });
-  if (seen) return "duplicate";
-
+/** Applies one attendance mutation (idempotency is handled by lib/sync/apply.ts). */
+export async function applyAttendanceMutation(user: CurrentUser, m: AttendanceMutation): Promise<void> {
   if (m.type === "site.startTime") {
     if (!hasAnyRole(user.roles, START_TIME_ROLES)) throw new MutationError("forbidden");
     const before = await db.site.findUniqueOrThrow({ where: { id: m.payload.siteId } });
@@ -128,6 +134,4 @@ export async function applyMutation(user: CurrentUser, m: Mutation): Promise<"ap
       }
     }
   }
-  await db.syncReceipt.create({ data: { clientMutationId: m.id, userId: user.id } });
-  return "applied";
 }

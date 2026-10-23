@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Mutation } from "../sync/schema";
 
 export const SHIFTS = ["DAY", "NIGHT", "EVE", "OTHER"] as const;
 export type Shift = (typeof SHIFTS)[number];
@@ -9,8 +10,8 @@ export type LeaveCode = (typeof LEAVE_CODES)[number];
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
-/** Offline-capable mutations. Every one carries a client UUID so a retry never applies twice. */
-export const mutationSchema = z.discriminatedUnion("type", [
+/** Attendance mutations (see lib/sync/schema.ts for the full offline set). */
+export const attendanceMutations = [
   z.object({
     id: z.string().uuid(),
     type: z.literal("attendance.mark"),
@@ -44,9 +45,15 @@ export const mutationSchema = z.discriminatedUnion("type", [
     at: z.string(),
     payload: z.object({ siteId: z.string().min(1), time: hhmm }),
   }),
-]);
+] as const;
 
-export type Mutation = z.infer<typeof mutationSchema>;
+export type AttendanceMutation = z.infer<(typeof attendanceMutations)[number]>;
+export type { Mutation };
+
+const ATT_TYPES = new Set(["attendance.mark", "attendance.finish", "attendance.clear", "site.startTime"]);
+export function isAttendanceMutation(m: Mutation): m is AttendanceMutation {
+  return ATT_TYPES.has(m.type);
+}
 
 export type DayRecord = {
   status: "IN" | "LATE" | "OUT";
@@ -67,6 +74,8 @@ export type DayRow = {
   vehicle: string | null;
   plannedShift: Shift | null;
   record: DayRecord | null;
+  /** e.g. "moved to Safe Tower 10:15" / "moved in from NBK 10:15" */
+  moved?: string | null;
 };
 
 export type AttendanceDay = {
@@ -82,6 +91,7 @@ export type AttendanceDay = {
 
 /** Apply a mutation to a cached day, so the phone shows its own unsynced taps. */
 export function applyLocal(day: AttendanceDay, m: Mutation): AttendanceDay {
+  if (!isAttendanceMutation(m)) return day;
   if (m.type === "site.startTime") {
     if (m.payload.siteId !== day.siteId) return day;
     return { ...day, startTime: m.payload.time };

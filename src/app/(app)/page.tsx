@@ -6,6 +6,7 @@ import { projectsFor } from "@/lib/projects";
 import { fmtDateTime } from "@/lib/time";
 import { isSiteUser } from "@/lib/roles";
 import Status from "@/components/Status";
+import DriverScreen from "@/components/driver/DriverScreen";
 
 // M1 dashboard: common frame for all roles. Role-specific cards arrive in M7.
 export default async function Dashboard({
@@ -23,6 +24,15 @@ export default async function Dashboard({
   const { scope: s, projects } = await projectsFor(me, scope);
   const groups = navFor(me.roles).filter((g) => g.key !== "home");
   const site = isSiteUser(me.roles);
+
+  // Driver home (brief 7.4): vehicle check, trips, bills.
+  if (me.roles.length === 1 && me.roles[0] === "DRIVER")
+    return (
+      <>
+        <h1>{t("hello", { name: me.displayName })}</h1>
+        <DriverScreen />
+      </>
+    );
 
   return (
     <>

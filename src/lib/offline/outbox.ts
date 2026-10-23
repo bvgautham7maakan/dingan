@@ -4,13 +4,16 @@ import type { Mutation } from "@/lib/attendance/types";
 
 type OutboxRow = Mutation & { tries: number; lastError?: string };
 type CacheRow = { key: string; data: unknown; savedAt: number };
+type FileRow = { clientId: string; blob: Blob; module: string; projectId?: string; createdAt: number };
 
 class KemDB extends Dexie {
   outbox!: Table<OutboxRow, string>;
   cache!: Table<CacheRow, string>;
+  files!: Table<FileRow, string>;
   constructor() {
     super("kem-offline");
     this.version(1).stores({ outbox: "id, type, at", cache: "key" });
+    this.version(2).stores({ outbox: "id, type, at", cache: "key", files: "clientId, createdAt" });
   }
 }
 
@@ -29,6 +32,33 @@ export async function pending(): Promise<Mutation[]> {
 }
 export async function pendingCount(): Promise<number> {
   return idb().outbox.count();
+}
+
+/** Keeps a photo / voice note on the phone until it is uploaded. Returns its client id. */
+export async function enqueueFile(blob: Blob, module: string, projectId?: string): Promise<string> {
+  const clientId = crypto.randomUUID();
+  await idb().files.put({ clientId, blob, module, projectId, createdAt: Date.now() });
+  return clientId;
+}
+
+/** Uploads waiting files. Returns false if the network failed (so mutations wait too). */
+async function uploadFiles(): Promise<boolean> {
+  const files = await idb().files.orderBy("createdAt").toArray();
+  for (const f of files) {
+    const fd = new FormData();
+    fd.append("file", f.blob, `${f.module}-${f.clientId}`);
+    fd.append("clientId", f.clientId);
+    fd.append("module", f.module);
+    if (f.projectId) fd.append("projectId", f.projectId);
+    const res = await fetch("/api/files", { method: "POST", body: fd, signal: AbortSignal.timeout(60_000) });
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return false;
+    }
+    if (res.ok || (res.status >= 400 && res.status < 500)) await idb().files.delete(f.clientId);
+    else return false;
+  }
+  return true;
 }
 
 export async function enqueue(m: Mutation) {
@@ -52,6 +82,8 @@ export function flush(): Promise<void> {
   const run = async () => {
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) return;
+      // photos and voice notes first: mutations refer to them
+      if (!(await uploadFiles())) return;
       const batch = (await idb().outbox.orderBy("at").limit(100).toArray()).map(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ({ tries, lastError, ...m }) => m,

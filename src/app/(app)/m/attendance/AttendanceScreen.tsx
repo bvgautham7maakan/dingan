@@ -197,6 +197,7 @@ export default function AttendanceScreen({ initialSiteId, date, today }: Props) 
                 {r.vehicle && ` · ${r.vehicle}`}
                 {!r.planned && ` · ${t("notInPlan")}`}
               </span>
+              {r.moved && <span className="status status-blue">⇄ {r.moved}</span>}
               <span className="att-state">
                 {!r.record && <span className="status status-red">⚠ {t("notMarked")}</span>}
                 {r.record?.status === "IN" && <span className="status status-green">✓ {t("in")} {r.record.inTime}</span>}

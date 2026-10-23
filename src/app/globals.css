@@ -245,3 +245,29 @@ table.kem tbody tr:nth-child(even) td { background: var(--alt-row); }
   .plan-save { bottom: var(--tabbar); }
 }
 .sync-pill { white-space: nowrap; font-weight: bold; }
+
+/* ── Approval step bar ─────────────────── */
+.stepbar { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.step { display: flex; gap: 6px; align-items: flex-start; font-size: 14px; }
+.step-icon { font-weight: bold; min-width: 18px; text-align: center; }
+.step-approved .step-icon, .step-approved .step-state { color: var(--green); }
+.step-pending .step-icon, .step-pending .step-state { color: var(--blue); font-weight: bold; }
+.step-waiting { color: var(--muted); }
+.step-returned .step-icon, .step-returned .step-state { color: var(--red); font-weight: bold; }
+.step-comment { display: block; font-style: italic; color: var(--body); }
+
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.photo-btn { cursor: pointer; }
+.photo-preview { max-width: 100%; max-height: 220px; border-radius: var(--radius); border: 1px solid var(--divider); margin-top: 6px; }
+.chip-alert { border-color: var(--red); color: var(--red); font-weight: bold; }
+.chip-alert[aria-pressed="true"] { background: var(--red); color: var(--white); border-color: var(--red); }
+.move-card { margin-bottom: 10px; display: grid; gap: 4px; }
+textarea { font-family: var(--font); font-size: 16px; padding: 10px 12px; border: 2px solid var(--divider); border-radius: var(--radius); }
+
+/* ── Vehicle clash ─────────────────────── */
+.clash-banner { border: 3px solid var(--red); background: #fff; color: var(--red); padding: 12px 16px; border-radius: var(--radius); margin: 12px 0; }
+.clash-banner ul { margin: 6px 0 0; padding-left: 18px; color: var(--body); }
+table.kem tbody tr.row-clash td { background: #fff; box-shadow: inset 4px 0 0 var(--red); }
+.card-alert { border-top-color: var(--red); }
+.plain-list { list-style: none; padding: 0; margin: 0; }
+.plain-list li { padding: 8px 0; border-bottom: 1px solid var(--divider); }

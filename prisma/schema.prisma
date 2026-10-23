@@ -246,7 +246,8 @@ model ApprovalFlow {
   entityType String // MATERIAL_REQUEST MANPOWER_MOVE VEHICLE_PLAN DAILY_REPORT ...
   entityId   String
   chainCode  String
-  status     String   @default("IN_PROGRESS") // IN_PROGRESS APPROVED REJECTED CLOSED
+  status     String   @default("IN_PROGRESS") // IN_PROGRESS APPROVED RETURNED REJECTED CLOSED
+  createdById String?
   currentSeq Int      @default(1)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -337,6 +338,7 @@ model WorkSegment {
   startAt      DateTime
   endAt        DateTime?
   source       String    @default("ATTENDANCE") // ATTENDANCE MOVE
+  moveId       String?
 
   attendance Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
   site       Site       @relation(fields: [siteId], references: [id])
@@ -359,6 +361,7 @@ model TimesheetExport {
 
 model ManpowerMove {
   id          String    @id @default(cuid())
+  date        String // yyyy-mm-dd (Asia/Dubai)
   fromSiteId  String
   toSiteId    String
   moveAt      DateTime
@@ -367,7 +370,7 @@ model ManpowerMove {
   voiceFileId String?
   appliedAt   DateTime?
   tripId      String?
-  status      String    @default("PENDING") // PENDING APPLIED APPROVED RETURNED
+  status      String    @default("PENDING") // PENDING (waiting approval) APPLIED (emergency, waiting approval) APPROVED RETURNED
   createdById String
   clientId    String?   @unique
   createdAt   DateTime  @default(now())
@@ -419,6 +422,7 @@ model Trip {
   materialsText   String?
   deliveryPhotoId String?
   status          String    @default("PLANNED") // PLANNED STARTED DELIVERED RETURNED CANCELLED
+  createdById     String?
   clientId        String?   @unique
   createdAt       DateTime  @default(now())
 
@@ -469,6 +473,8 @@ model DriverBill {
   odometer    Int?
   photoId     String
   voiceFileId String?
+  note        String?
+  status      String   @default("SUBMITTED") // SUBMITTED CHECKED
   clientId    String?  @unique
   createdAt   DateTime @default(now())
 
@@ -741,6 +747,7 @@ model FileObject {
   projectId    String?
   module       String
   uploadedById String
+  clientId     String?   @unique
   mirroredAt   DateTime?
   createdAt    DateTime  @default(now())
 
