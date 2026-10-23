@@ -168,6 +168,7 @@ async function main() {
 
   await seedDemoAttendance(ids["renjith"], ids["sanu"]);
   await seedDemoLogistics(ids);
+  await seedDemoSite(ids);
 
   console.log(`Seeded ${USERS.length} users (temporary password: ${TEMP}), ${SITES.length} sites, ${PROJECTS.length} projects, ${emps.length} workers.`);
 }
@@ -268,6 +269,61 @@ async function seedDemoLogistics(ids: Record<string, string>) {
   });
   await db.notification.create({
     data: { userId: ids["renjith"], type: "APPROVAL", title: "Move 3 worker(s) NBK → Safe Tower at 10:15 (Emergency) – waiting for you", link: "/m/moves", entityType: "MANPOWER_MOVE", entityId: move.id },
+  });
+}
+
+/** Demo: duties (one overdue), 2 site queries (one answered), a safety check, a report waiting for Renjith. */
+async function seedDemoSite(ids: Record<string, string>) {
+  if ((await db.duty.count()) > 0 || (await db.siteQuery.count()) > 0) return;
+  const nbk = await db.project.findUniqueOrThrow({ where: { code: "NBK" } });
+  const safe = await db.project.findUniqueOrThrow({ where: { code: "SAFE" } });
+  const today = new Date(Date.now() + 4 * 3_600_000).toISOString().slice(0, 10);
+  const h = (hours: number) => new Date(Date.now() + hours * 3_600_000);
+  await db.duty.createMany({
+    data: [
+      { projectId: nbk.id, title: "Pressure test CHW risers level 1–3", assignedById: ids["renjith"], assigneeId: ids["sanu"], deadline: h(-20) },
+      { projectId: nbk.id, title: "Close ceiling grid B2 after FCU install", assignedById: ids["renjith"], assigneeId: ids["sanu"], deadline: h(5) },
+      { projectId: safe.id, title: "Shift cable drums to level 4", assignedById: ids["renjith"], assigneeId: ids["vishnu"], deadline: h(30) },
+    ],
+  });
+  const q1 = await db.siteQuery.create({
+    data: {
+      ref: "NBK-SQ-001", projectId: nbk.id, raisedById: ids["sanu"], discipline: "HVAC", drawingRef: "NBK-SHD-HVAC-005",
+      subject: "FCU-12 clashes with beam at grid C4", question: "Can FCU-12 be lowered by 100 mm or moved 300 mm towards grid C5?",
+    },
+  });
+  await db.siteQuery.create({
+    data: {
+      ref: "NBK-SQ-002", projectId: nbk.id, raisedById: ids["jitendar"], discipline: "HVAC", subject: "Duct size at corridor L2",
+      question: "Drawing shows 600x300 but space allows 500x300 only. Confirm alternative.", status: "ANSWERED",
+      answer: "Use 700x250 – same area. Revised sketch SK-HVAC-021 to follow.", answeredById: ids["alwin"], answeredAt: h(-2),
+    },
+  });
+  await db.notification.create({ data: { userId: ids["alwin"], type: "QUERY", title: `${q1.ref}: ${q1.subject}`, link: `/m/site-queries/${q1.id}`, entityType: "SITE_QUERY", entityId: q1.id } });
+  const keys = ["ppe", "toolbox", "housekeeping", "access", "workAtHeight", "electrical", "tools", "fire", "firstAid", "permits", "barricade", "welfare"];
+  await db.safetyChecklist.create({
+    data: {
+      projectId: nbk.id, date: today, byId: ids["sanu"], issues: 1,
+      items: keys.map((key) => (key === "barricade" ? { key, result: "ISSUE", note: "Shaft opening at L3 not barricaded" } : { key, result: "OK" })),
+    },
+  });
+  const yesterday = new Date(Date.now() + 4 * 3_600_000 - 86_400_000).toISOString().slice(0, 10);
+  const report = await db.dailyReport.create({
+    data: {
+      projectId: nbk.id, date: yesterday, authorId: ids["sanu"], status: "UNDER_REVIEW",
+      manpower: { own: 11, subs: [{ name: "MEPS", count: 4 }], attendance: { present: 11, late: 1, leave: ["Aneesh (SL)"], movedIn: 0, movedOut: 3 } },
+      workDone: "GI ducting level 2 grid C–D (36 m). CHW insulation level 1 (20 m).", issues: "FCU-12 clash with beam – query NBK-SQ-001 raised.",
+      nextDay: "Ducting grid D–E, FCU-13/14 hanging.",
+    },
+  });
+  await db.approvalFlow.create({
+    data: {
+      entityType: "DAILY_REPORT", entityId: report.id, chainCode: "DAILY_REPORT", createdById: ids["sanu"],
+      steps: { create: [
+        { seq: 1, label: "Head supervisor check", role: "HEAD_SUP", status: "PENDING" },
+        { seq: 2, label: "Site engineer check", role: "SE", assigneeId: ids["sachin"], status: "WAITING" },
+      ] },
+    },
   });
 }
 

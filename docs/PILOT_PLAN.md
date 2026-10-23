@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M3 built** – awaiting sign-off before M4.
+Status: **M4 built** – awaiting sign-off before M5.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -202,3 +202,16 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Uploads | Real file type checked from the bytes (JPEG/PNG/WebP, voice WebM/OGG/M4A/WAV), max 15 MB, photos shrunk on the phone to ≤1600 px | Security + storage |
 | OneDrive mirror | Off by default (`ONEDRIVE_MIRROR=true` to enable); writes only into the project's OneDrive path + "KEM App uploads" | "Never write into OneDrive except approved paths" |
 | Map link | Site's Google Maps link if set, else its GPS, else a search for "<site>, Abu Dhabi" | Site GPS not yet entered |
+
+## 8. Decisions taken during M4
+
+| Item | Decision | Why |
+|---|---|---|
+| Daily report steps | 1 Manpower (pre-filled from attendance + moves, subcontractor counts) · 2 Work done (text, photos, voice) · 3 Issues & materials needed · 4 Tomorrow's plan + check & send | Mockup page 21 says "4 steps" but the step names are images; change if the mockup differs |
+| Report chain | Supervisor → Head supervisor check → Site engineer check (the project's SE if exactly one is assigned, else any SE) | Brief section 6 |
+| Report returned | Goes back one step; from Renjith it goes back to the supervisor, who edits and sends again (one report per supervisor per project per day) | Brief section 6 |
+| Draft | The report is kept on the phone while being written, so a call or lost signal does not lose it | Field use |
+| Duties | Renjith (or Admin) assigns; supervisor marks done with a photo (required); SE and PE of the project plus Renjith are notified; list grouped overdue → today → this week | Brief 6 + 7.7 |
+| Safety checklist | 12 items OK / Issue / N/A; "Mark all remaining OK"; an Issue needs a note and a photo and alerts Renjith + SE; Renjith/SE/PE see 7-day overview and which sites have not checked today | Brief scope item 7 |
+| Site queries | Ref `<PROJECT>-SQ-001`; discipline, drawing ref (free text until M6), photos, voice note; Design answers; requester notified; requester / SE / PE close | Brief section 6 |
+| Two-button forms | Approve and Return are separate server actions (a clicked button's value is not sent) | Bug found by the browser tests |

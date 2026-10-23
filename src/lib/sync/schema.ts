@@ -6,6 +6,12 @@ const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const base = { id: z.string().uuid(), at: z.string() };
 const clientFile = z.string().uuid();
 
+export const SAFETY_ITEMS = [
+  "ppe", "toolbox", "housekeeping", "access", "workAtHeight", "electrical", "tools", "fire", "firstAid", "permits", "barricade", "welfare",
+] as const;
+export const SAFETY_RESULTS = ["OK", "ISSUE", "NA"] as const;
+export const DISCIPLINES = ["ELE", "PLB", "HVAC", "FLS", "GEN"] as const;
+
 export const MOVE_REASONS = ["EMERGENCY", "EXTRA", "MATERIAL", "OTHER"] as const;
 export const BILL_TYPES = ["FUEL", "SALIK", "FINE"] as const;
 
@@ -13,7 +19,7 @@ export const BILL_TYPES = ["FUEL", "SALIK", "FINE"] as const;
  * Every change a phone can make offline. Each carries a client UUID, so a retry never applies twice.
  * Photos/voice notes are uploaded first (POST /api/files with their own client id) and referenced here.
  */
-export const mutationSchema = z.discriminatedUnion("type", [
+const mutationSchemas = [
   ...attendanceMutations,
   z.object({
     ...base,
@@ -67,7 +73,57 @@ export const mutationSchema = z.discriminatedUnion("type", [
       note: z.string().max(1000).optional(),
     }),
   }),
-]);
+  z.object({
+    ...base,
+    type: z.literal("duty.done"),
+    payload: z.object({ dutyId: z.string().min(1), photoClientId: clientFile, note: z.string().max(1000).optional() }),
+  }),
+  z.object({
+    ...base,
+    type: z.literal("report.submit"),
+    payload: z.object({
+      projectId: z.string().min(1),
+      date: day,
+      manpower: z.object({
+        own: z.number().int().min(0).max(500),
+        subs: z.array(z.object({ name: z.string().max(60), count: z.number().int().min(0).max(500) })).max(10),
+        remarks: z.string().max(1000).optional(),
+      }),
+      workDone: z.string().min(1).max(4000),
+      issues: z.string().max(4000).optional(),
+      materialsNeeded: z.string().max(2000).optional(),
+      nextDay: z.string().max(4000).optional(),
+      photoClientIds: z.array(clientFile).max(10),
+      voiceClientId: clientFile.optional(),
+    }),
+  }),
+  z.object({
+    ...base,
+    type: z.literal("safety.submit"),
+    payload: z.object({
+      projectId: z.string().min(1),
+      date: day,
+      items: z.array(z.object({ key: z.enum(SAFETY_ITEMS), result: z.enum(SAFETY_RESULTS), note: z.string().max(500).optional() })).length(SAFETY_ITEMS.length),
+      photoClientId: clientFile.optional(),
+    }),
+  }),
+  z.object({
+    ...base,
+    type: z.literal("query.create"),
+    payload: z.object({
+      projectId: z.string().min(1),
+      subject: z.string().min(1).max(200),
+      question: z.string().min(1).max(4000),
+      discipline: z.enum(DISCIPLINES).optional(),
+      drawingRef: z.string().max(100).optional(),
+      photoClientIds: z.array(clientFile).max(6),
+      voiceClientId: clientFile.optional(),
+    }),
+  }),
+] as const;
 
-export type Mutation = z.infer<typeof mutationSchema>;
+export const mutationSchema = z.discriminatedUnion("type", mutationSchemas);
+
+// Inferred per member: inferring from the union itself widens `type` to string.
+export type Mutation = z.infer<(typeof mutationSchemas)[number]>;
 export type MutationOf<T extends Mutation["type"]> = Extract<Mutation, { type: T }>;

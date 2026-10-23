@@ -55,11 +55,18 @@ export async function submitForApproval(form: FormData) {
   back(date, "&submitted=1");
 }
 
-export async function decidePlan(form: FormData) {
+// One action per button: the clicked button's name/value is not sent with a server action form.
+export async function approvePlan(form: FormData) {
+  await decidePlan(form, "APPROVE");
+}
+export async function returnPlan(form: FormData) {
+  await decidePlan(form, "RETURN");
+}
+
+async function decidePlan(form: FormData, action: "APPROVE" | "RETURN") {
   const me = await requireRole([PLAN_APPROVER]);
   const date = day.parse(form.get("date"));
   const flowId = z.string().parse(form.get("flowId"));
-  const action = z.enum(["APPROVE", "RETURN"]).parse(form.get("action"));
   try {
     await act(me, flowId, action, String(form.get("comment") ?? ""));
   } catch (e) {

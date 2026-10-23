@@ -495,6 +495,7 @@ model Duty {
   status       String    @default("OPEN") // OPEN DONE CANCELLED
   doneAt       DateTime?
   donePhotoId  String?
+  doneNote     String?
   createdAt    DateTime  @default(now())
 
   project    Project @relation(fields: [projectId], references: [id])
@@ -528,6 +529,7 @@ model SafetyChecklist {
   date      String
   byId      String
   items     Json
+  issues    Int      @default(0)
   photoId   String?
   clientId  String?  @unique
   createdAt DateTime @default(now())
@@ -544,10 +546,13 @@ model SiteQuery {
   subject           String
   question          String
   drawingRevisionId String?
+  drawingRef        String? // free text until the drawing register (M6) is linked
+  discipline        String? // ELE PLB HVAC FLS GEN
   status            String    @default("OPEN") // OPEN ANSWERED CLOSED
   answer            String?
   answeredById      String?
   answeredAt        DateTime?
+  closedAt          DateTime?
   clientId          String?   @unique
   createdAt         DateTime  @default(now())
 

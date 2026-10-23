@@ -130,7 +130,8 @@
     "voiceNote": "आवाज़ नोट",
     "record": "आवाज़ रिकॉर्ड करें",
     "stop": "रोकें",
-    "delete": "हटाएँ"
+    "delete": "हटाएँ",
+    "addPhoto": "फ़ोटो जोड़ें"
   },
   "moves": {
     "from": "कहाँ से",
@@ -168,5 +169,43 @@
     "odometer": "ओडोमीटर (km)",
     "photo": "बिल फ़ोटो",
     "save": "बिल सेव करें"
+  },
+  "duty": {
+    "overdue": "समय निकल गया",
+    "today": "आज",
+    "thisWeek": "इस हफ़्ते",
+    "markDone": "हो गया",
+    "confirmDone": "हो गया – भेजें",
+    "deadline": "आखिरी समय",
+    "photo": "फ़ोटो"
+  },
+  "report": {
+    "step_manpower": "लोग",
+    "step_work": "किया गया काम",
+    "step_issues": "दिक्कतें और सामान",
+    "step_tomorrow": "कल",
+    "ownWorkers": "साइट पर KEM मज़दूर",
+    "workDone": "आज का काम",
+    "photos": "फ़ोटो",
+    "back": "वापस",
+    "next": "आगे",
+    "submit": "रिपोर्ट भेजें"
+  },
+  "safety": {
+    "allOk": "बाकी सब OK",
+    "r_OK": "OK",
+    "r_ISSUE": "दिक्कत",
+    "r_NA": "लागू नहीं",
+    "submit": "चेकलिस्ट भेजें",
+    "item_ppe": "PPE पहना (हेलमेट, जूते, जैकेट, दस्ताने)",
+    "item_firstAid": "फ़र्स्ट एड किट है",
+    "item_fire": "आग बुझाने का यंत्र है"
+  },
+  "query": {
+    "ask": "डिज़ाइन से पूछें",
+    "subject": "विषय",
+    "question": "सवाल",
+    "send": "डिज़ाइन को भेजें",
+    "answer": "जवाब"
   }
 }

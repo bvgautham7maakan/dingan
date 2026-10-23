@@ -8,7 +8,7 @@ import { hasAnyRole } from "@/lib/roles";
 import { addDaysIso, dubaiHHMM, fmtIsoDay, todayDubai } from "@/lib/time";
 import StepBar from "@/components/StepBar";
 import Submit from "@/components/Submit";
-import { addTrip, cancelTrip, decidePlan, submitForApproval } from "./actions";
+import { addTrip, approvePlan, cancelTrip, returnPlan, submitForApproval } from "./actions";
 
 export default async function VehiclePlanPage({
   searchParams,
@@ -69,15 +69,15 @@ export default async function VehiclePlanPage({
 
       {flow && <StepBar flow={flow} />}
       {flow?.canAct && (
-        <form action={decidePlan} className="form-inline" style={{ marginBottom: 16 }}>
+        <form action={approvePlan} className="form-inline" style={{ marginBottom: 16 }}>
           <input type="hidden" name="date" value={date} />
           <input type="hidden" name="flowId" value={flow.id} />
           <div className="field">
             <label htmlFor="plan-comment">{t("comment")}</label>
             <input id="plan-comment" name="comment" />
           </div>
-          <button className="btn btn-primary" name="action" value="APPROVE">✓ {t("approve")}</button>
-          <button className="btn btn-danger" name="action" value="RETURN">↩ {t("return")}</button>
+          <button className="btn btn-primary">✓ {t("approve")}</button>
+          <button className="btn btn-danger" formAction={returnPlan}>↩ {t("return")}</button>
         </form>
       )}
 

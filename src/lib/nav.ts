@@ -33,9 +33,9 @@ export const NAV: NavGroup[] = [
       { key: "dayPlan", href: "/m/plan", roles: ["HEAD_SUP", "SE", "PE", "PM", "ADMIN"] },
       { key: "timesheet", href: "/m/timesheet", roles: ["ADMIN", "PE", "BUL", "OPS", "PM", "SE", "COORD", "HEAD_SUP"] },
       { key: "moves", href: "/m/moves", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "ADMIN"] },
-      { key: "duties", href: "/m/duties", roles: OFFICE_SITE, stage: "M4" },
-      { key: "dailyReport", href: "/m/daily-report", roles: OFFICE_SITE, stage: "M4" },
-      { key: "safety", href: "/m/safety", roles: OFFICE_SITE, stage: "M4" },
+      { key: "duties", href: "/m/duties", roles: ["HEAD_SUP", "SUP", "HVAC_SUP", "SE", "PE", "PM", "ADMIN", "COORD"] },
+      { key: "dailyReport", href: "/m/daily-report", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "PM", "OPS", "BUL", "COORD", "ADMIN"] },
+      { key: "safety", href: "/m/safety", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "ADMIN"] },
     ],
   },
   {
@@ -62,7 +62,7 @@ export const NAV: NavGroup[] = [
     icon: "▦",
     items: [
       { key: "drawings", href: "/m/drawings", roles: [...OFFICE_SITE, "DESIGN", "EST"], stage: "M6" },
-      { key: "siteQueries", href: "/m/site-queries", roles: [...OFFICE_SITE, "DESIGN"], stage: "M4" },
+      { key: "siteQueries", href: "/m/site-queries", roles: ["SUP", "HVAC_SUP", "HEAD_SUP", "SE", "PE", "ADMIN", "DESIGN", "PM", "OPS", "COORD"] },
       { key: "authority", href: "/m/authority", roles: ["ADMIN", "PE", "OPS", "PM", "DESIGN", "COORD"], stage: "P3" },
     ],
   },

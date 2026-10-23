@@ -2,7 +2,7 @@
 import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "crypto";
-import type { Mutation } from "@/lib/attendance/types";
+import type { Mutation } from "@/lib/sync/schema";
 
 const m = (): Mutation => ({
   id: randomUUID(), type: "attendance.clear", at: new Date().toISOString(), payload: { date: "2026-10-21", workerId: "w1" },

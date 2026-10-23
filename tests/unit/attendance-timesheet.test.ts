@@ -8,7 +8,7 @@ import { buildTimesheet } from "@/lib/timesheet/build";
 import { timesheetWorkbook } from "@/lib/timesheet/export";
 import { dubaiDateTime } from "@/lib/time";
 import type { CurrentUser } from "@/lib/auth/current";
-import type { Mutation } from "@/lib/attendance/types";
+import type { Mutation } from "@/lib/sync/schema";
 import { resetDb } from "./reset";
 
 let sanu: CurrentUser;

@@ -9,10 +9,10 @@ import {
   type AttendanceDay,
   type DayRow,
   type LeaveCode,
-  type Mutation,
   type Shift,
 } from "@/lib/attendance/types";
 import { cacheGet, cacheSet, enqueue, pending, subscribeOutbox } from "@/lib/offline/outbox";
+import type { Mutation } from "@/lib/sync/schema";
 import { addMinutes } from "@/lib/time";
 
 type Props = { initialSiteId: string; date: string; today: string };

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { Mutation } from "../sync/schema";
 
 export const SHIFTS = ["DAY", "NIGHT", "EVE", "OTHER"] as const;
 export type Shift = (typeof SHIFTS)[number];
@@ -48,10 +47,8 @@ export const attendanceMutations = [
 ] as const;
 
 export type AttendanceMutation = z.infer<(typeof attendanceMutations)[number]>;
-export type { Mutation };
-
 const ATT_TYPES = new Set(["attendance.mark", "attendance.finish", "attendance.clear", "site.startTime"]);
-export function isAttendanceMutation(m: Mutation): m is AttendanceMutation {
+export function isAttendanceMutation(m: { type: string }): m is AttendanceMutation {
   return ATT_TYPES.has(m.type);
 }
 
@@ -90,7 +87,7 @@ export type AttendanceDay = {
 };
 
 /** Apply a mutation to a cached day, so the phone shows its own unsynced taps. */
-export function applyLocal(day: AttendanceDay, m: Mutation): AttendanceDay {
+export function applyLocal(day: AttendanceDay, m: { type: string }): AttendanceDay {
   if (!isAttendanceMutation(m)) return day;
   if (m.type === "site.startTime") {
     if (m.payload.siteId !== day.siteId) return day;

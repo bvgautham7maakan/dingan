@@ -1,6 +1,6 @@
 "use client";
 import Dexie, { type Table } from "dexie";
-import type { Mutation } from "@/lib/attendance/types";
+import type { Mutation } from "@/lib/sync/schema";
 
 type OutboxRow = Mutation & { tries: number; lastError?: string };
 type CacheRow = { key: string; data: unknown; savedAt: number };

@@ -90,3 +90,29 @@ test("supervisor bill form has no amount field", async ({ page }, info) => {
   await expect(page.getByRole("button", { name: "Salik" })).toBeVisible();
   await expect(page.getByLabel(/Amount/)).toHaveCount(0);
 });
+
+test("vehicle plan: Vishnu submits, Renjith returns it with a comment", async ({ browser }, info) => {
+  test.skip(info.project.name !== "desktop-1440");
+  const tomorrow = new Date(Date.now() + 4 * 3_600_000 + 86_400_000).toISOString().slice(0, 10);
+  const v = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const vp = await v.newPage();
+  await loginOk(vp, "vishnu");
+  await vp.goto(`/m/vehicle-plan?date=${tomorrow}`);
+  await vp.getByLabel("Vehicle *").selectOption({ label: "Vehicle 2" });
+  await vp.getByLabel("From *").selectOption({ label: "Office" });
+  await vp.getByLabel("To *").selectOption({ label: "Safe Tower" });
+  await vp.getByRole("button", { name: "Add trip" }).click();
+  await vp.getByRole("button", { name: "Send plan to head supervisor" }).click();
+  await expect(vp.getByText("Sent to Renjith for approval.")).toBeVisible();
+  await v.close();
+
+  const r = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const rp = await r.newPage();
+  await loginOk(rp, "renjith");
+  await rp.goto(`/m/vehicle-plan?date=${tomorrow}`);
+  await rp.getByLabel("Comment (needed to return)").fill("Use Vehicle 1");
+  await rp.getByRole("button", { name: "↩ Return" }).click();
+  await expect(rp.getByText("Head supervisor – returned")).toBeVisible();
+  await expect(rp.getByText("Draft")).toBeVisible();
+  await r.close();
+});
