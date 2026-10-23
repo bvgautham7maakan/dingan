@@ -228,5 +228,19 @@
     "tool_chain": "⤳ തുടർ അളവ്",
     "knownMm": "അറിയാവുന്ന നീളം (mm)",
     "saveMeasure": "സേവ്"
+  },
+  "dash": {
+    "today": "ഇന്ന്",
+    "q_attendance": "ഹാജർ",
+    "q_moves": "ആളുകളെ മാറ്റുക",
+    "q_dailyReport": "ദിവസ റിപ്പോർട്ട്",
+    "q_safety": "സുരക്ഷാ പരിശോധന",
+    "q_materialRequests": "മെറ്റീരിയൽ അപേക്ഷ",
+    "q_siteQueries": "ഡിസൈനോട് ചോദിക്കുക",
+    "q_drawings": "ഡ്രോയിംഗുകൾ",
+    "q_duties": "എന്റെ ജോലികൾ"
+  },
+  "notes": {
+    "title": "അറിയിപ്പുകൾ"
   }
 }

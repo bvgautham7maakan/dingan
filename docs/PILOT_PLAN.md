@@ -1,6 +1,6 @@
 # KEM Site Coordination Platform — Pilot Plan (pre-build)
 
-Status: **M6 built** – awaiting sign-off before M7.
+Status: **M7 built** – awaiting sign-off before M8.
 
 ## 1. Stack (confirmed, with notes)
 
@@ -247,3 +247,15 @@ Single server serializer: for roles SUP, HEAD_SUP, HVAC_SUP, DRIVER, DESIGN ever
 | Snap to lines | Not in the pilot – tap accuracy depends on zoom; zoom in before tapping | Phase 2 with DWG |
 | Offline drawings | "Save offline" stores the PDF and viewer page in a separate phone cache that survives app updates; the drawing opens with no signal | Brief 7.6 |
 | Site query link | A query's drawing ref links to the released revision when it exists in the register | Convenience |
+
+## 11. Decisions taken during M7
+
+| Item | Decision | Why |
+|---|---|---|
+| Dashboard frame | Every role: HIGH-ALERT (SE/PE only) → Waiting for you (Overdue / Today / This week / Later) → Since your last visit → Today's cards → Coming later; desktop right panel My / All projects | Brief 7.7 |
+| Due times | Approvals: 24 h after reaching the step; site queries: 48 h; drawings to release: 5 days; supervisors: attendance by 10:00, safety by 12:00, daily report by 18:00; duty: its deadline; driver: vehicle check by 07:00 | Pilot defaults – tell me if you want others |
+| Role cards | From MOCKUP V4 captions (pages 4–17), live data from M1–M6; modules outside the pilot shown as "Coming in phase 2/3" per role | Brief 2 + 7.7 |
+| Since last visit | A visit = dashboard opened more than 30 min after the previous view; shows notifications, requests, moves, reports, queries, drawing releases since then | Brief 7.7 |
+| Notifications | In-app only: bell with unread count on every screen, list page, opening one marks it read; "mark all read" | Brief scope 12 (no third-party push) |
+| Project page | Man-days used vs budget (moved workers by share of the day), today, moves, reports, open requests, FC drawings | Brief 7.3 / MOCKUP p27 |
+| Man-day budget | Entered in Admin › Projects; demo: NBK 2,400, Safe Tower 1,800, Mangrove 900 | Brief 7.3 |

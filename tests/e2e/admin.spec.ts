@@ -38,6 +38,8 @@ test("PM can sign out a user's devices but cannot edit roles", async ({ page, br
   await expect(page.getByRole("button", { name: "Deactivate" })).toHaveCount(0);
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Sign out all devices" }).click();
+  // wait for the server to confirm before checking the phone (avoids a race with the action)
+  await expect(page.getByRole("status").filter({ hasText: "device(s) signed out" })).toBeVisible();
   expect((await p.request.get("/api/me")).status()).toBe(401);
   await ctx.close();
 });

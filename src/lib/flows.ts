@@ -5,4 +5,6 @@ import "./logistics/server";
 import "./site/reports";
 import "./materials/server";
 
-export { act, flowView, pendingFor, ApprovalError } from "./approvals";
+import "./drawings/server";
+
+export { act, describeFlow, flowView, pendingFor, ApprovalError } from "./approvals";

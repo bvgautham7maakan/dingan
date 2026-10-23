@@ -9,10 +9,13 @@ import OnlineStatus from "./OnlineStatus";
 import SideNav from "./SideNav";
 import TabBar from "./TabBar";
 import OutboxBoot from "./OutboxBoot";
+import { db } from "@/lib/db";
 
 export default async function Shell({ user, children }: { user: CurrentUser; children: React.ReactNode }) {
   const t = await getTranslations("common");
   const roleText = user.roles.filter(isRole).map((r) => ROLE_LABEL[r]).join(" · ");
+  const unread = await db.notification.count({ where: { userId: user.id, readAt: null } });
+  const tn = await getTranslations("notes");
   return (
     <>
       <header className="topbar">
@@ -26,6 +29,10 @@ export default async function Shell({ user, children }: { user: CurrentUser; chi
           <b>{user.displayName}</b>
           {roleText}
         </div>
+        <Link href="/notifications" className="bell" aria-label={tn("bell", { n: unread })} data-testid="bell">
+          <span aria-hidden="true">🔔</span>
+          {unread > 0 && <span className="badge">{unread > 99 ? "99+" : unread}</span>}
+        </Link>
         <LangToggle />
       </header>
       <div className="layout">

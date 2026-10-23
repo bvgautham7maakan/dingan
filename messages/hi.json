@@ -228,5 +228,19 @@
     "tool_chain": "⤳ लगातार नाप",
     "knownMm": "पता लंबाई (mm)",
     "saveMeasure": "सेव"
+  },
+  "dash": {
+    "today": "आज",
+    "q_attendance": "हाज़िरी",
+    "q_moves": "मज़दूर बदली",
+    "q_dailyReport": "दैनिक रिपोर्ट",
+    "q_safety": "सुरक्षा जाँच",
+    "q_materialRequests": "सामान की माँग",
+    "q_siteQueries": "डिज़ाइन से पूछें",
+    "q_drawings": "ड्रॉइंग",
+    "q_duties": "मेरे काम"
+  },
+  "notes": {
+    "title": "सूचनाएँ"
   }
 }

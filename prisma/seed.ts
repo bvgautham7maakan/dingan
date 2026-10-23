@@ -128,6 +128,10 @@ async function main() {
     }
   }
 
+  // man-day budgets for the pilot projects (entered manually; edit in Admin › Projects)
+  for (const [code, budget] of [["NBK", 2400], ["SAFE", 1800], ["MANG", 900]] as const)
+    await db.project.updateMany({ where: { code, manDayBudget: null }, data: { manDayBudget: budget } });
+
   const vehicles = [
     { name: "Vehicle 1", defaultDriverId: ids["ali"] },
     { name: "Vehicle 2", defaultDriverId: null },

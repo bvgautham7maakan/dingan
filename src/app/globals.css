@@ -307,3 +307,21 @@ table.kem tbody tr.row-clash td { background: #fff; box-shadow: inset 4px 0 0 va
 .viewer-overlay.picking { cursor: crosshair; touch-action: none; }
 .viewer-info .status { white-space: normal; }
 @media (max-width: 899px) { .viewer-bar { position: static; } }
+
+/* ── Dashboard ─────────────────────────── */
+.badge { display: inline-block; min-width: 24px; padding: 0 7px; border-radius: 12px; background: var(--black); color: var(--white); font-size: 13px; font-weight: bold; text-align: center; margin-left: 6px; }
+.pending-list { list-style: none; padding: 0; margin: 4px 0 12px; }
+.pending-list li { padding: 8px 0; border-bottom: 1px solid var(--divider); display: grid; gap: 2px; }
+.pending-list a { font-weight: bold; color: var(--body); }
+.quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 900px) { .quick-grid { grid-template-columns: repeat(4, 1fr); } }
+.quick { justify-content: flex-start; font-size: 17px; }
+.quick span[aria-hidden] { font-size: 22px; }
+.card-alert { border-top-color: var(--red); }
+.bell { position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; text-decoration: none; color: var(--black); font-size: 22px; border: 2px solid var(--divider); border-radius: var(--radius); }
+.bell .badge { position: absolute; top: -6px; right: -8px; background: var(--red); margin: 0; }
+.bar { height: 12px; background: var(--divider); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+.bar span { display: block; height: 100%; background: var(--green); }
+.bar span.bar-red { background: var(--red); }
+.note-unread a { font-weight: bold; }
+.note-read a { font-weight: normal; color: var(--muted); }

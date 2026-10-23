@@ -152,3 +152,9 @@ export async function pendingFor(user: CurrentUser) {
   });
   return steps.filter((s) => canActOnStep(user, s, s.flow.createdById));
 }
+
+/** Title + link of an item in a chain (for dashboards and notifications). */
+export async function describeFlow(entityType: string, entityId: string) {
+  const h = hooks.get(entityType);
+  return { title: h ? await h.title(entityId) : entityType, link: h?.link(entityId) ?? "/" };
+}
