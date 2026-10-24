@@ -11,7 +11,7 @@ Full steps: [`docs/DEPLOY_WINDOWS.md`](docs/DEPLOY_WINDOWS.md). In short:
 | Step | Command |
 |---|---|
 | 1. Install Node.js 22 LTS + Git | nodejs.org · git-scm.com |
-| 2. Get the code | `git clone https://github.com/bvgautham7maakan/dingan.git C:\KEM-App` |
+| 2. Get the code | `git clone https://github.com/bvgautham7maakan/dingan.git C:\KEM-Site` |
 | 3. Set up (run twice: first creates `.env`) | `powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1` |
 | 4. Service + nightly backup (Administrator) | `powershell -ExecutionPolicy Bypass -File scripts\windows\install-service.ps1` |
 | 5. Remote access | [`docs/TAILSCALE_FUNNEL.md`](docs/TAILSCALE_FUNNEL.md) |

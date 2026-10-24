@@ -11,7 +11,7 @@ Funnel gives the ZBook a public HTTPS address (e.g. `https://kem-zbook.<your-tai
 | 3 | Admin console › **DNS**: turn on **MagicDNS** and **HTTPS certificates**. |
 | 4 | Admin console › **Access controls**: allow Funnel for the ZBook, e.g. add `"nodeAttrs": [{ "target": ["autogroup:member"], "attr": ["funnel"] }]` (Tailscale also offers this when you first run the command below). |
 | 5 | On the ZBook (PowerShell): `tailscale funnel --bg 3000` – prints the public URL. `--bg` keeps it on after reboots. |
-| 6 | In `C:\KEM-App\.env` set `COOKIE_SECURE="true"`, then `Restart-ScheduledTask "KEM Site"`. |
+| 6 | In `C:\KEM-Site\.env` set `COOKIE_SECURE="true"`, then `Restart-ScheduledTask "KEM Site"`. |
 | 7 | Phones: open the URL in Chrome → ⋮ → **Add to Home screen**. |
 
 Check / stop:

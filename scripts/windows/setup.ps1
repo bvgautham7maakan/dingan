@@ -1,4 +1,4 @@
-# KEM Site – first-time setup / update on the ZBook (run in PowerShell from the app folder):
+# KEM Site - first-time setup / update on the ZBook (run in PowerShell from the app folder):
 #   powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1
 # Safe to run again after "git pull": installs packages, applies new migrations, rebuilds.
 $ErrorActionPreference = "Stop"
@@ -11,7 +11,7 @@ if ($major -lt 20) { throw "Node.js 20 or newer is needed (found $(node -v))." }
 
 if (-not (Test-Path ".env")) {
   Copy-Item ".env.example" ".env"
-  Write-Host "Created .env – edit SEED_TEMP_PASSWORD, BACKUP_DIR and COOKIE_SECURE, then run this script again." -ForegroundColor Yellow
+  Write-Host "Created .env - edit SEED_TEMP_PASSWORD, BACKUP_DIR and COOKIE_SECURE, then run this script again." -ForegroundColor Yellow
   notepad ".env"
   exit 0
 }

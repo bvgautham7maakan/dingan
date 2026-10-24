@@ -1,4 +1,4 @@
-# KEM Site – run as a background service on the ZBook (survives reboot) + nightly backup at 02:00.
+# KEM Site - run as a background service on the ZBook (survives reboot) + nightly backup at 02:00.
 # Run once in an *Administrator* PowerShell from the app folder:
 #   powershell -ExecutionPolicy Bypass -File scripts\windows\install-service.ps1
 # Uses Windows Task Scheduler (built in, nothing to download). Tasks run as the current
@@ -8,7 +8,7 @@ $App = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $Me = "$env:USERDOMAIN\$env:USERNAME"
 $principal = New-ScheduledTaskPrincipal -UserId $Me -LogonType S4U -RunLevel Highest
 
-# 1. the app – starts at boot, restarts itself (start-kem.cmd loop) and via Task Scheduler on failure
+# 1. the app - starts at boot, restarts itself (start-kem.cmd loop) and via Task Scheduler on failure
 $start = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c `"$App\scripts\windows\start-kem.cmd`"" -WorkingDirectory $App
 $boot = New-ScheduledTaskTrigger -AtStartup
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable `

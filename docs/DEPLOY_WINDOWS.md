@@ -7,8 +7,8 @@ Everything runs on the ZBook. No cloud services; remote access only through Tail
 | # | Step | Command / where |
 |---|---|---|
 | 1 | Install **Node.js 22 LTS** and **Git for Windows** | nodejs.org · git-scm.com |
-| 2 | Get the code | `git clone https://github.com/bvgautham7maakan/dingan.git C:\KEM-App` |
-| 3 | Settings | `cd C:\KEM-App` → `powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1` (first run creates `.env` and opens it in Notepad) |
+| 2 | Get the code | `git clone https://github.com/bvgautham7maakan/dingan.git C:\KEM-Site` |
+| 3 | Settings | `cd C:\KEM-Site` → `powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1` (first run creates `.env` and opens it in Notepad) |
 | 4 | Fill in `.env` | `SEED_TEMP_PASSWORD`, `BACKUP_DIR` (OneDrive folder), `COOKIE_SECURE="true"` once Funnel is on, `SEED_DEMO="false"` for go-live |
 | 5 | Install, migrate, seed, build | run `setup.ps1` again |
 | 6 | Run as a service + nightly backup | **Administrator** PowerShell: `powershell -ExecutionPolicy Bypass -File scripts\windows\install-service.ps1` |
@@ -28,7 +28,7 @@ Power settings: set **Sleep = Never** when plugged in, or the app is unreachable
 | Need | Do |
 |---|---|
 | Is it running? | `Get-ScheduledTask "KEM Site*" \| Get-ScheduledTaskInfo` · http://localhost:3000/api/health |
-| Logs | `C:\KEM-App\data\logs\server.log`, `backup.log`; backup history also in `BACKUP_DIR\backup.log` |
+| Logs | `C:\KEM-Site\data\logs\server.log`, `backup.log`; backup history also in `BACKUP_DIR\backup.log` |
 | Restart | `Restart-ScheduledTask "KEM Site"` (or reboot) |
 | Stop | `Stop-ScheduledTask "KEM Site"` |
 | Remove service | `scripts\windows\uninstall-service.ps1` (data is kept) |
@@ -43,8 +43,8 @@ Backup (`npm run backup`, nightly):
 Restore (e.g. new ZBook):
 1. Install as in section 1 (steps 1–5, use the same `.env`).
 2. `Stop-ScheduledTask "KEM Site"`.
-3. Copy `BACKUP_DIR\db\kem-<date>.db` to `C:\KEM-App\data\kem.db` (replace).
-4. Copy `BACKUP_DIR\uploads` to `C:\KEM-App\data\uploads`.
+3. Copy `BACKUP_DIR\db\kem-<date>.db` to `C:\KEM-Site\data\kem.db` (replace).
+4. Copy `BACKUP_DIR\uploads` to `C:\KEM-Site\data\uploads`.
 5. `npx prisma migrate deploy` (in case the code is newer), then `Start-ScheduledTask "KEM Site"`.
 
 Test a restore once before go-live.
@@ -52,7 +52,7 @@ Test a restore once before go-live.
 ## 4. Updating to a new version
 
 ```
-cd C:\KEM-App
+cd C:\KEM-Site
 git pull
 powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1
 Restart-ScheduledTask "KEM Site"
