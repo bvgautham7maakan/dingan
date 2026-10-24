@@ -29,7 +29,7 @@ Power settings: set **Sleep = Never** when plugged in, or the app is unreachable
 |---|---|
 | Is it running? | `Get-ScheduledTask "KEM Site*" \| Get-ScheduledTaskInfo` · http://localhost:3000/api/health |
 | Logs | `C:\KEM-Site\data\logs\server.log`, `backup.log`; backup history also in `BACKUP_DIR\backup.log` |
-| Restart | `Restart-ScheduledTask "KEM Site"` (or reboot) |
+| Restart | `Stop-ScheduledTask "KEM Site"; Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | % { Stop-Process -Id $_.OwningProcess -Force }; Start-ScheduledTask "KEM Site"` (or reboot) |
 | Stop | `Stop-ScheduledTask "KEM Site"` |
 | Remove service | `scripts\windows\uninstall-service.ps1` (data is kept) |
 
@@ -55,7 +55,7 @@ Test a restore once before go-live.
 cd C:\KEM-Site
 git pull
 powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1
-Restart-ScheduledTask "KEM Site"
+Stop-ScheduledTask "KEM Site"; Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | % { Stop-Process -Id $_.OwningProcess -Force }; Start-ScheduledTask "KEM Site"
 ```
 `setup.ps1` applies new database migrations; it never deletes data. Take a backup first (`npm run backup`).
 
